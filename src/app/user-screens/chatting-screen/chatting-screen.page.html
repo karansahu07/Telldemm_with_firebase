@@ -1,0 +1,143 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+
+    <ion-buttons slot="start" style="color: black; width: 8%;margin-top: 15px;">
+      <ion-back-button defaultHref="/home-screen"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons>
+      <ion-item lines="none" style="--padding-start: 0;" detail="false"
+        style="--background: white; color:black;margin-top: 15px;">
+        <ion-avatar slot="start">
+          <img src="assets/images/user.jfif" alt="User Avatar" />
+        </ion-avatar>
+        <ion-label
+          style="width: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <h2 style="margin: 0; font-size: 16px;">Madhav Kaushik</h2>
+        </ion-label>
+      </ion-item>
+    </ion-buttons>
+
+    <ion-buttons slot="end" style="margin-top: 15px;">
+
+      <ion-button style="color: black;">
+        <ion-icon name="videocam-outline" style="font-size: 35px;"></ion-icon>
+      </ion-button>
+
+      <!-- <ion-button style="color: black;">
+          <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
+        </ion-button> -->
+
+      <ion-button (click)="goToCallingScreen()" style="color: black;">
+        <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+
+      <ion-button style="color: black;">
+        <ion-icon name="ellipsis-vertical-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding chat-background" scroll-y="true">
+
+  <!-- Your messages or chat content goes here -->
+
+  <div>
+    <div style="
+        display: flex;
+        flex-direction: column;
+        background: #FFFFFF;
+        width: fit-content;
+        max-width: 75%;
+        border-radius: 20px;
+        padding: 5px 15px;
+        gap: 10px;
+        align-items: flex-end;
+        margin-bottom: 10px;
+      ">
+      <p
+        style="color: #000000; margin: 0; font-size: 16px; flex-grow: 1;font-family:Montserrat-SemiBold;font-weight:semi-bold">
+        This is a
+        longermessage to test the width!This is alonger message to test the width!This is a longer message to test the
+        width!This is a longer message to testthe width!This is a longer message to test the width!This is a longer
+        message to test the width!This is alonger message to test the width!This is a longer message to test the
+        width!This is a longer message to testthe width!This is a longer message to test the width!This is a longer
+        message to test the width!This is a
+        longer message to test the width!This is a longer message to test the width!This is a longer message to test
+        the width!This is a longer message to test the width!This is a longer message to test the width!This is a
+        longer message to test the width!This is a longer message to test the width!This is a longer message to test
+        the width!This is a longer message to test the width!</p>
+      <p style="color: #444343; margin: 0 0 2px 0; font-size: 13px; white-space: nowrap;">09:14 am</p>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <div style="
+          display: flex;
+          flex-direction: column;
+          background: #FFFFFF;
+          width: fit-content;
+          max-width: 75%;
+          border-radius: 20px;
+          padding: 5px 15px;
+          gap: 10px;
+          align-items: flex-end;
+          margin-bottom: 10px;
+        ">
+        <p style="color: #000000; margin: 0; font-size: 16px; flex-grow: 1;font-family:Montserrat-SemiBold;">This is a
+          longer message to test the width!This is a
+          longer message to test the width!This is a longer message to test the width!This is a longer message to test
+          the width!This is a longer message to test the width!This is a longer message to test the width!This is a
+          longer message to test the width!This is a longer message to test the width!This is a longer message to test
+          the width!This is a longer message to test the width!This is a longer message to test the width!This is a
+          longer message to test the width!This is a longer message to test the width!This is a longer message to test
+          the width!This is a longer message to test the width!This is a longer message to test the width!This is a
+          longer message to test the width!This is a longer message to test the width!This is a longer message to test
+          the width!This is a longer message to test the width!</p>
+        <p style="color: #444343; margin: 0 0 2px 0; font-size: 13px; white-space: nowrap;">09:16 am</p>
+      </div>
+    </div>
+  </div>
+
+  <ion-row style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 91%;
+    gap: 5px;
+    position: absolute;
+    bottom: 20px;
+    position: fixed;
+  ">
+
+    <ion-col style="
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 18px;
+      font-family: Montserrat-Medium;
+      padding: 0px 15px 0px 15px;
+    ">
+      <ion-icon name="document-text-outline" style="font-size: 25px; margin-right: 6px; color: black;"></ion-icon>
+
+      <ion-input type="text" placeholder="Message" style="flex: 1;color: black;--highlight-color-focused: none; ">
+      </ion-input>
+
+      <ion-icon name="attach-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+      <ion-icon name="camera-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+    </ion-col>
+
+    <ion-col size="auto">
+      <ion-button style="--background: #FF1414;" shape="round">
+        <ion-icon slot="icon-only" name="mic" style="color: white;"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

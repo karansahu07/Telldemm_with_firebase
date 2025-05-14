@@ -35,3 +35,48 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+@font-face {
+    font-family: Montserrat-bold;
+    src: url('./assets/fonts/Montserrat-Bold.eot') format('eot'),
+        url('./assets/fonts/Montserrat-Bold.woff2') format('woff2'),
+        url('./assets/fonts/Montserrat-Bold.woff') format('woff'),
+        url('./assets/fonts/Montserrat-Bold.ttf') format('ttf'),
+        url('./assets/fonts/Montserrat-Bold.otf') format('otf');
+}
+
+@font-face {
+    font-family: Montserrat-Medium;
+    src: url('./assets/fonts/Montserrat-Medium.eot') format('eot'),
+        url('./assets/fonts/Montserrat-Medium.woff2') format('woff2'),
+        url('./assets/fonts/Montserrat-Medium.woff') format('woff'),
+        url('./assets/fonts/Montserrat-Medium.ttf') format('ttf'),
+        url('./assets/fonts/Montserrat-Medium.otf') format('otf');
+}
+
+@font-face {
+    font-family: Montserrat-SemiBold;
+    src: url('./assets/fonts/Montserrat-SemiBold.eot') format('eot'),
+        url('./assets/fonts/Montserrat-SemiBold.woff2') format('woff2'),
+        url('./assets/fonts/Montserrat-SemiBold.woff') format('woff'),
+        url('./assets/fonts/Montserrat-SemiBold.ttf') format('ttf'),
+        url('./assets/fonts/Montserrat-SemiBold.otf') format('otf');
+}
+
+@font-face {
+    font-family: Montserrat-Regular;
+    src: url('./assets/fonts/Montserrat-Regular.eot') format('eot'),
+        url('./assets/fonts/Montserrat-Regular.woff2') format('woff2'),
+        url('./assets/fonts/Montserrat-Regular.woff') format('woff'),
+        url('./assets/fonts/Montserrat-Regular.ttf') format('ttf'),
+        url('./assets/fonts/Montserrat-Regular.otf') format('otf');
+}
+
+@font-face {
+    font-family: OpenSans-SemiBold;
+    src: url('./assets/fonts/OpenSans-SemiBold.eot') format('eot'),
+        url('./assets/fonts/OpenSans-SemiBold.woff2') format('woff2'),
+        url('./assets/fonts/OpenSans-SemiBold.woff') format('woff'),
+        url('./assets/fonts/OpenSans-SemiBold.ttf') format('ttf'),
+        url('./assets/fonts/OpenSans-SemiBold.otf') format('otf');
+}
