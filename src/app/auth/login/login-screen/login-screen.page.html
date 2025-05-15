@@ -1,4 +1,4 @@
-<div [ngClass]="{ 'blurred': showOtpPopup }" class="Lorem-main">
+<!-- <div [ngClass]="{ 'blurred': showOtpPopup }" class="Lorem-main">
   <ion-header [translucent]="true" class="background" style="padding-top: 30px;">
     <ion-toolbar>
       <ion-title>Enter Your Mobile Number</ion-title>
@@ -28,16 +28,8 @@
           </div>
 
           <div class="phone-wrapper">
-            <input
-  type="tel"
-  maxlength="10"
-  [(ngModel)]="phoneNumber"
-  name="phone"
-  style="text-align: left;"
-  pattern="[0-9]*"
-  inputmode="numeric"
-  (keypress)="allowOnlyNumbers($event)"
-/>
+            <input type="tel" maxlength="10" [(ngModel)]="phoneNumber" name="phone" style="text-align: left;"
+              pattern="[0-9]*" inputmode="numeric" (keypress)="allowOnlyNumbers($event)" />
 
             <p class="underline-country"></p>
           </div>
@@ -84,6 +76,109 @@
         (keydown)="handleBackspace($event, 5)" (paste)="$event.preventDefault()" #otp5>
     </div>
 
+    <div class="submit" style="margin-bottom: 30px;">
+      <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
+    </div>
+  </div>
+</div> -->
+
+
+
+<div [ngClass]="{ 'blurred': showOtpPopup }" class="Lorem-main">
+  <ion-header [translucent]="true" class="background" style="padding-top: 30px;">
+    <ion-toolbar>
+      <ion-title>Enter Your Mobile Number</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <div class="Lorem-main">
+      <div style="margin-top: 30px;">
+        <!-- Description -->
+        <div class="Lorem">
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+
+        <!-- Country Dropdown -->
+        <div class="main-dropdown">
+          <select class="drop-down">
+            <option value="">India</option>
+            <option value="">USA</option>
+            <option value="">UK</option>
+          </select>
+          <div class="underline-text"></div>
+        </div>
+
+        <!-- Country Code + Mobile Input -->
+        <div class="main-country">
+          <div class="country-code">
+            <p class="count-code">+91</p>
+            <p class="underline-country"></p>
+          </div>
+
+          <div class="phone-wrapper">
+            <input
+              type="tel"
+              maxlength="10"
+              placeholder="Enter mobile number"
+              [(ngModel)]="phoneNumber"
+              name="phone"
+              style="text-align: left;"
+              pattern="[0-9]*"
+              inputmode="numeric"
+              (keypress)="allowOnlyNumbers($event)" />
+            <p class="underline-country"></p>
+          </div>
+        </div>
+
+        <!-- Validation Message -->
+        <p *ngIf="phoneNumber && !isPhoneValid()" class="required-line">
+          Please enter a valid 10-digit mobile number.
+        </p>
+      </div>
+
+      <!-- Agree & Continue Button -->
+      <div class="agree-div">
+        <button [disabled]="!isPhoneValid()" (click)="onAgreeClick()">Agree & Continue</button>
+      </div>
+    </div>
+  </ion-content>
+</div>
+
+<!-- Recaptcha container -->
+<div id="recaptcha-container"></div>
+
+<!-- OTP POPUP -->
+<div *ngIf="showOtpPopup" class="otp-popup-wrapper">
+  <div class="backgrounds">
+    <div class="opt">
+      <p>Enter Your OTP</p>
+    </div>
+
+    <div class="border-line"></div>
+
+    <!-- OTP Inputs -->
+    <div class="otp-input">
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 0)"
+        (keydown)="handleBackspace($event, 0)" (paste)="$event.preventDefault()" #otp0>
+
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 1)"
+        (keydown)="handleBackspace($event, 1)" (paste)="$event.preventDefault()" #otp1>
+
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 2)"
+        (keydown)="handleBackspace($event, 2)" (paste)="$event.preventDefault()" #otp2>
+
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 3)"
+        (keydown)="handleBackspace($event, 3)" (paste)="$event.preventDefault()" #otp3>
+
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 4)"
+        (keydown)="handleBackspace($event, 4)" (paste)="$event.preventDefault()" #otp4>
+
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 5)"
+        (keydown)="handleBackspace($event, 5)" (paste)="$event.preventDefault()" #otp5>
+    </div>
+
+    <!-- Submit OTP -->
     <div class="submit" style="margin-bottom: 30px;">
       <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
     </div>

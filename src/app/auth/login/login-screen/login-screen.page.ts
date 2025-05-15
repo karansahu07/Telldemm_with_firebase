@@ -1,87 +1,200 @@
+// import { CommonModule } from '@angular/common';
+// import { Component, OnInit } from '@angular/core';
+// import { IonicModule } from '@ionic/angular';
+// import { Router } from '@angular/router';
+// import { ViewChildren, QueryList, ElementRef } from '@angular/core';
+// import { FormsModule } from '@angular/forms';
+
+// @Component({
+//   selector: 'app-login-screen',
+//   templateUrl: './login-screen.page.html',
+//   styleUrls: ['./login-screen.page.scss'],
+//   standalone: true,
+//   imports: [IonicModule, CommonModule, FormsModule]
+// })
+// export class LoginScreenPage implements OnInit {
+//   showOtpPopup = false;
+//   phoneNumber: string = '';
+//   otpValues: string[] = ['', '', '', '', '', ''];
+
+//   @ViewChildren('otp0, otp1, otp2, otp3, otp4, otp5') otpInputs!: QueryList<ElementRef>;
+
+//   constructor(private router: Router) {}
+
+//   ngOnInit() {}
+
+//   get isPhoneValid(): boolean {
+//     return /^\d{10}$/.test(this.phoneNumber);
+//   }
+
+//   goToHome() {
+//     this.router.navigateByUrl('/home-screen');
+//   }
+
+//   onAgreeClick() {
+//     if (this.isPhoneValid) {
+//       this.showOtpPopup = true;
+//     }
+//   }
+
+//   allowOnlyNumbers(event: KeyboardEvent) {
+//     const charCode = event.key;
+//     if (!/^\d$/.test(charCode)) {
+//       event.preventDefault();
+//     }
+//   }
+
+//   closeOtpPopup() {
+//     this.showOtpPopup = false;
+//   }
+
+//   onOtpInput(event: any, index: number) {
+//     const input = event.target as HTMLInputElement;
+//     const value = input.value;
+
+//     if (!/^\d$/.test(value)) {
+//       input.value = '';
+//       this.otpValues[index] = '';
+//       return;
+//     }
+
+//     this.otpValues[index] = value;
+
+//     if (value.length === 1 && index < 5) {
+//       const inputsArray = this.otpInputs.toArray();
+//       inputsArray[index + 1].nativeElement.focus();
+//     }
+//   }
+
+//   handleBackspace(event: KeyboardEvent, index: number) {
+//     const input = event.target as HTMLInputElement;
+//     if (event.key === 'Backspace') {
+//       if (input.value === '') {
+//         this.otpValues[index] = '';
+//         if (index > 0) {
+//           const inputsArray = this.otpInputs.toArray();
+//           inputsArray[index - 1].nativeElement.focus();
+//         }
+//       } else {
+//         this.otpValues[index] = '';
+//       }
+//     }
+//   }
+
+//   isOtpComplete(): boolean {
+//     return this.otpValues.every(val => val !== '');
+//   }
+// }
+
+
+import { Component, ViewChildren, ElementRef, QueryList } from '@angular/core';
+import { AuthService } from '../../auth.service';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { Router } from '@angular/router';
-import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-login-screen',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+  ],
   templateUrl: './login-screen.page.html',
   styleUrls: ['./login-screen.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
 })
-export class LoginScreenPage implements OnInit {
+export class LoginScreenPage {
+  phoneNumber = '';
+  countryCode = '+91';
   showOtpPopup = false;
-  phoneNumber: string = '';
-  otpValues: string[] = ['', '', '', '', '', ''];
+  otp: string[] = ['', '', '', '', '', ''];
 
   @ViewChildren('otp0, otp1, otp2, otp3, otp4, otp5') otpInputs!: QueryList<ElementRef>;
 
-  constructor(private router: Router) {}
-
-  ngOnInit() {}
-
-  get isPhoneValid(): boolean {
-    return /^\d{10}$/.test(this.phoneNumber);
-  }
-
-  goToHome() {
-    this.router.navigateByUrl('/home-screen');
-  }
-
-  onAgreeClick() {
-    if (this.isPhoneValid) {
-      this.showOtpPopup = true;
-    }
-  }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   allowOnlyNumbers(event: KeyboardEvent) {
-    const charCode = event.key;
-    if (!/^\d$/.test(charCode)) {
+    if (!/^\d$/.test(event.key)) {
       event.preventDefault();
     }
   }
 
-  closeOtpPopup() {
-    this.showOtpPopup = false;
+  isPhoneValid(): boolean {
+    return /^\d{10}$/.test(this.phoneNumber.trim());
   }
 
-  onOtpInput(event: any, index: number) {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
+  isOtpComplete(): boolean {
+    return this.otp.every(d => d.trim().length === 1);
+  }
 
-    if (!/^\d$/.test(value)) {
-      input.value = '';
-      this.otpValues[index] = '';
+  async onAgreeClick() {
+    this.phoneNumber = this.phoneNumber.trim();
+
+    if (!this.isPhoneValid()) {
+      alert('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    this.otpValues[index] = value;
+    const fullPhone = `${this.countryCode}${this.phoneNumber}`;
 
-    if (value.length === 1 && index < 5) {
-      const inputsArray = this.otpInputs.toArray();
-      inputsArray[index + 1].nativeElement.focus();
+    try {
+      await this.authService.initRecaptcha('recaptcha-container');
+      await this.authService.sendOTP(fullPhone);
+      this.showOtpPopup = true;
+    } catch (err: any) {
+      console.error('Error sending OTP:', err);
+      alert(err?.message || 'Failed to send OTP. Try again.');
+    }
+  }
+
+  onOtpInput(event: any, index: number) {
+    const input = event.target.value;
+
+    if (!/^\d$/.test(input)) {
+      this.otp[index] = '';
+      event.target.value = '';
+      return;
+    }
+
+    this.otp[index] = input;
+
+    if (input && index < 5) {
+      const nextInput = this.otpInputs.get(index + 1);
+      nextInput?.nativeElement.focus();
     }
   }
 
   handleBackspace(event: KeyboardEvent, index: number) {
-    const input = event.target as HTMLInputElement;
     if (event.key === 'Backspace') {
-      if (input.value === '') {
-        this.otpValues[index] = '';
-        if (index > 0) {
-          const inputsArray = this.otpInputs.toArray();
-          inputsArray[index - 1].nativeElement.focus();
-        }
-      } else {
-        this.otpValues[index] = '';
+      if (!this.otp[index] && index > 0) {
+        const prevInput = this.otpInputs.get(index - 1);
+        prevInput?.nativeElement.focus();
       }
+      this.otp[index] = '';
     }
   }
 
-  isOtpComplete(): boolean {
-    return this.otpValues.every(val => val !== '');
+  async goToHome() {
+    if (!this.isOtpComplete()) {
+      alert('Please enter the complete 6-digit OTP.');
+      return;
+    }
+
+    const code = this.otp.join('');
+    try {
+      const userCredential = await this.authService.verifyOTP(code);
+      console.log('Logged in as:', userCredential.user?.phoneNumber);
+      alert('Login successful!');
+      this.router.navigateByUrl('/home-screen');
+    } catch (err: any) {
+      console.error('OTP verification failed:', err);
+      alert(err?.message || 'Invalid OTP. Please try again.');
+    }
   }
 }
+
