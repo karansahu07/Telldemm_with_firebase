@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
 
     <ion-buttons slot="start" style="color: black; width: 8%;margin-top: 15px;">
@@ -24,9 +24,6 @@
         <ion-icon name="videocam-outline" style="font-size: 35px;"></ion-icon>
       </ion-button>
 
-      <!-- <ion-button style="color: black;">
-          <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
-        </ion-button> -->
 
       <ion-button (click)="goToCallingScreen()" style="color: black;">
         <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
@@ -43,8 +40,6 @@
 </ion-header>
 
 <ion-content class="ion-padding chat-background" scroll-y="true">
-
-  <!-- Your messages or chat content goes here -->
 
   <div>
     <div style="
@@ -140,4 +135,200 @@
     </ion-col>
   </ion-row>
 
+</ion-content> -->
+
+
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+
+    <ion-buttons slot="start" style="color: black; width: 8%;margin-top: 15px;">
+      <ion-back-button defaultHref="/home-screen"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons>
+      <ion-item lines="none" style="--padding-start: 0;" detail="false"
+        style="--background: white; color:black;margin-top: 15px;">
+        <ion-avatar slot="start">
+          <img src="assets/images/user.jfif" alt="User Avatar" />
+        </ion-avatar>
+        <ion-label
+          style="width: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <h2 style="margin: 0; font-size: 16px;">{{ receiverId   }}</h2>
+        </ion-label>
+      </ion-item>
+    </ion-buttons>
+
+    <ion-buttons slot="end" style="margin-top: 15px;">
+
+      <ion-button style="color: black;">
+        <ion-icon name="videocam-outline" style="font-size: 35px;"></ion-icon>
+      </ion-button>
+
+
+      <ion-button (click)="goToCallingScreen()" style="color: black;">
+        <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+
+      <ion-button style="color: black;">
+        <ion-icon name="ellipsis-vertical-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<!-- <ion-content class="chat-background">
+  <div *ngFor="let msg of messages" style="display: flex; flex-direction: column;"
+    [ngClass]="{'ion-align-self-end': msg.sender_id === senderId, 'ion-align-self-start': msg.sender_id !== senderId}">
+    <div [ngClass]="msg.sender_id === senderId ? 'message-bubble sent' : 'message-bubble received'">
+      {{ msg.text }}
+      <div class="time-stamp">{{ msg.timestamp }}</div>
+    </div>
+  </div>
+</ion-content> -->
+
+<!-- <div class="chat-footer">
+  <ion-input
+    [(ngModel)]="messageText"
+    placeholder="Message"
+    clearInput
+  ></ion-input>
+
+  <ion-button fill="clear" color="primary" (click)="sendMessage()">
+    <ion-icon slot="icon-only" name="send"></ion-icon>
+  </ion-button>
+</div> -->
+
+<!-- <ion-content class="chat-background">
+  <div *ngFor="let msg of messages" style="display: flex; flex-direction: column;"
+    [ngClass]="{ 'align-end': msg.sender_id === senderId, 'align-start': msg.sender_id !== senderId }">
+    
+    <div class="message-bubble">
+      <p class="message-text">{{ msg.text }}</p>
+      <p class="time-stamp">{{ msg.timestamp }}</p>
+    </div>
+
+  </div>
 </ion-content>
+
+
+<ion-row style="
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 91%;
+  gap: 5px;
+  position: absolute;
+  bottom: 20px;
+  position: fixed;
+">
+  
+  <ion-col style="
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-size: 18px;
+    font-family: Montserrat-Medium;
+    padding: 0px 15px 0px 15px;
+  ">
+    <ion-icon name="document-text-outline" style="font-size: 25px; margin-right: 6px; color: black;"></ion-icon>
+
+    <ion-input type="text" placeholder="Message" style="flex: 1; color: black; --highlight-color-focused: none;"
+      [(ngModel)]="messageText" clearInput></ion-input>
+
+
+    <ion-icon name="attach-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+    <ion-icon name="camera-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+  </ion-col>
+
+  
+  <ion-col size="auto">
+    <ion-button style="--background: #FF1414;" shape="round">
+      <ion-icon slot="icon-only" name="mic" style="color: white;"></ion-icon>
+    </ion-button>
+  </ion-col>
+
+  
+  <ion-col size="auto">
+    <ion-button fill="clear" color="primary" (click)="sendMessage()">
+      <ion-icon slot="icon-only" name="send"></ion-icon>
+    </ion-button>
+  </ion-col>
+</ion-row> -->
+
+
+<!-- <ion-content class="chat-background">
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages" 
+         [ngClass]="{ 'align-end': msg.sender_id === senderId, 'align-start': msg.sender_id !== senderId }"
+         style="display: flex; flex-direction: column;">
+      <div class="message-bubble">
+        <p class="message-text">{{ msg.text }}</p>
+        <p class="time-stamp">{{ msg.timestamp }}</p>
+      </div>
+    </div>
+  </div>
+</ion-content> -->
+
+
+<ion-content class="chat-background">
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages" 
+         [ngClass]="{ 'align-end': msg.sender_id === senderId, 'align-start': msg.sender_id !== senderId }"
+         style="display: flex; flex-direction: column;">
+      
+      <div class="message-bubble" 
+           [ngClass]="msg.sender_id === senderId ? 'sender-message' : 'receiver-message'">
+        <p class="message-text">{{ msg.text }}</p>
+        <p class="time-stamp">{{ msg.timestamp }}</p>
+      </div>
+      
+    </div>
+  </div>
+</ion-content>
+
+
+<!-- Fixed Footer -->
+<div class="footer">
+  <ion-row style="display: flex; align-items: center; justify-content: center; width: 100%; gap: 5px;">
+    <!-- Message Input Section -->
+    <ion-col style="
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 18px;
+      font-family: Montserrat-Medium;
+      padding: 0px 15px;
+    ">
+      <ion-icon name="document-text-outline" style="font-size: 25px; margin-right: 6px; color: black;"></ion-icon>
+      <ion-input type="text" placeholder="Message" [(ngModel)]="messageText" clearInput
+        style="flex: 1; color: black; --highlight-color-focused: transparent;"></ion-input>
+      <ion-icon name="attach-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+      <ion-icon name="camera-outline" style="font-size: 25px; margin-left: 6px; color: black;"></ion-icon>
+    </ion-col>
+
+    <!-- Mic Button -->
+    <ion-col size="auto">
+      <ion-button style="--background: #FF1414;" shape="round">
+        <ion-icon slot="icon-only" name="mic" style="color: white;"></ion-icon>
+      </ion-button>
+    </ion-col>
+
+    <!-- Send Button -->
+    <ion-col size="auto">
+      <ion-button fill="clear" class="send-btn" style="color: #FF1414;" color="primary" shape="round" (click)="sendMessage()">
+        <ion-icon slot="icon-only" name="send"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</div>

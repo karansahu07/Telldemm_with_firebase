@@ -143,8 +143,9 @@ export class LoginScreenPage {
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
 
     try {
-      await this.authService.initRecaptcha('recaptcha-container');
-      await this.authService.sendOTP(fullPhone);
+      localStorage.setItem("userId",this.phoneNumber);
+      // await this.authService.initRecaptcha('recaptcha-container');
+      // await this.authService.sendOTP(fullPhone);
       this.showOtpPopup = true;
     } catch (err: any) {
       console.error('Error sending OTP:', err);
@@ -187,8 +188,8 @@ export class LoginScreenPage {
 
     const code = this.otp.join('');
     try {
-      const userCredential = await this.authService.verifyOTP(code);
-      console.log('Logged in as:', userCredential.user?.phoneNumber);
+      // const userCredential = await this.authService.verifyOTP(code);
+      // console.log('Logged in as:', userCredential.user?.phoneNumber);
       alert('Login successful!');
       this.router.navigateByUrl('/home-screen');
     } catch (err: any) {

@@ -10,21 +10,15 @@
       </ion-button>
       <ion-button>
         <img src="assets/images/camera.svg" />
-        <!-- <ion-icon name="camera"></ion-icon> -->
       </ion-button>
       <ion-button (click)="presentPopover($event)">
         <img src="assets/images/dots (1).svg" />
-        <!-- <ion-icon name="ellipsis-vertical"></ion-icon> -->
+      
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 
   <ion-toolbar>
-    <!-- <div class="main-header">
-      <div class="container">
-        <input type="text" id="searchInput" placeholder="Ask Meta AI or Search" />
-      </div>
-    </div> -->
 
     <div class="main-header">
       <div class="container">
@@ -50,46 +44,7 @@
 
 <ion-content [fullscreen]="true">
 
-  <!-- <ion-list>
-    <ion-item *ngFor="let chat of filteredChats" (click)="openChat(chat)">
-      <ion-avatar slot="start">
-        <img src="assets/images/user.jfif" />
-      </ion-avatar>
-      <ion-label>
-        <p class="chat-message">{{ chat.name }}</p>
-        <p [innerHTML]="chat.message" [style.color]="chat.unread ? '#FF1414' : '#444343'"></p>        
-      </ion-label>
-      <div slot="end" class="chat-meta">
-        <p class="time">{{ chat.time }}</p>
-        <ion-badge *ngIf="chat.unread">{{ chat.unreadCount }}</ion-badge>
-      </div>
-    </ion-item>
-  </ion-list> -->
-
-  <!-- <ion-list>
-    <ion-item *ngFor="let chat of filteredChats" (click)="openChat(chat)">
-      <ion-avatar slot="start">
-        <img src="assets/images/user.jfif" />
-      </ion-avatar>
-      <ion-label>
-        <p class="chat-message">{{ chat.name }}</p>
-        <p [style.color]="chat.unread ? '#FF1414' : '#444343'">
-          <ng-container *ngIf="chat.message.includes('✔✔')">
-            <img src="assets/images/read.svg" class="tick-icon" alt="Read" />
-            {{ chat.message.replace('✔✔', '') }}
-          </ng-container>
-          <ng-container *ngIf="!chat.message.includes('✔✔')">
-            {{ chat.message }}
-          </ng-container>
-        </p>
-      </ion-label>
-      <div slot="end" class="chat-meta">
-        <p class="time">{{ chat.time }}</p>
-        <ion-badge *ngIf="chat.unread">{{ chat.unreadCount }}</ion-badge>
-      </div>
-    </ion-item>
-  </ion-list> -->
-
+  
   <ion-list>
   <ion-item *ngFor="let chat of filteredChats" (click)="openChat(chat)">
     <ion-avatar slot="start">
@@ -118,59 +73,8 @@
     </div>
   </ion-fab>
 
+
 </ion-content>
 
 <app-footer-tabs [totalUnreadCount]="totalUnreadCount"></app-footer-tabs>
 
-<!-- ✅ Footer Section -->
-<!-- <ion-footer>
-  <ion-toolbar>
-    <ion-buttons slot="start" class="footer-buttons">
-
-      <ion-router-link routerLink="/chat" class="footer-link">
-        <div style="display: flex;flex-direction: column;align-items: center;">
-          <div>
-            <img src="assets/images/whatsapp-new-chat.svg" />
-          </div>
-          <div>
-            <ion-label>Chat</ion-label>
-          </div>
-        </div>
-      </ion-router-link>
-
-      <ion-router-link routerLink="/updates" class="footer-link">
-        <div style="display: flex;flex-direction: column;align-items: center;">
-          <div>
-            <img src="assets/images/icon2.svg" />
-          </div>
-          <div>
-            <ion-label>Updates</ion-label>
-          </div>
-        </div>
-      </ion-router-link>
-
-      <ion-router-link routerLink="/communities" class="footer-link">
-        <div style="display: flex;flex-direction: column;align-items: center;">
-          <div>
-            <img src="assets/images/contact.svg" />
-          </div>
-          <div>
-            <ion-label>Communities</ion-label>
-          </div>
-        </div>
-      </ion-router-link>
-
-      <ion-router-link routerLink="/calls-screen" class="footer-link">
-        <div style="display: flex;flex-direction: column;align-items: center;">
-          <div>
-            <img src="assets/images/call.svg" />
-          </div>
-          <div>
-            <ion-label>Calls</ion-label>
-          </div>
-        </div>
-      </ion-router-link>
-
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer> -->
