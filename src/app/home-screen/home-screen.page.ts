@@ -105,7 +105,7 @@ export class HomeScreenPage implements OnInit {
   currUserId: string | null = localStorage.getItem("userId");
 
   chatList = [
-    { name: 'Alice', userId: '9034223459', message: 'Hello', messageStatus: 'sent', unread: false, time: '10:00 AM', unreadCount: 0, group: false },
+    { name: 'Alice', userId: '9138152160', message: 'Hello', messageStatus: 'sent', unread: false, time: '10:00 AM', unreadCount: 0, group: false },
     // { name: 'smith', userId: '9034223456', message: 'Hello again', messageStatus: 'seen', unread: false, time: '10:30 AM', unreadCount: 0, group: false },
     { name: 'Bob', userId: '9034223457', message: 'How are you?', messageStatus: 'received', unread: true, time: '11:00 AM', unreadCount: 2, group: false },
     // { name: 'Group Chat', userId: 'groupchat456', message: 'Welcome all!', messageStatus: 'received', unread: true, time: '12:00 PM', unreadCount: 4, group: true },

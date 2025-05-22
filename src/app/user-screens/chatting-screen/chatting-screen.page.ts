@@ -51,6 +51,27 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
   router: any;
 
   ngOnInit() {
+    // this.senderId = localStorage.getItem('userId') || '';
+    // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+    // console.log(this.senderId);
+    // console.log(this.receiverId);
+    // this.loadFromLocalStorage();
+
+    // this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
+    //   const isCurrentChat =
+    //     (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
+    //     (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
+
+    //   if (isCurrentChat) {
+    //     this.messages.push(msg);
+    //     this.saveToLocalStorage();
+    //   }
+    // });
+  }
+
+
+  ngAfterViewInit() {
+  setTimeout(() => {
     this.senderId = localStorage.getItem('userId') || '';
     this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
     console.log(this.senderId);
@@ -67,7 +88,9 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
         this.saveToLocalStorage();
       }
     });
-  }
+  });
+}
+
 
   saveToLocalStorage() {
     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));

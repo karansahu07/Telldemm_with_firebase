@@ -139,46 +139,6 @@
 
 
 
-<ion-header [translucent]="true">
-  <ion-toolbar>
-
-    <ion-buttons slot="start" style="color: black; width: 8%;margin-top: 15px;">
-      <ion-back-button defaultHref="/home-screen"></ion-back-button>
-    </ion-buttons>
-
-    <ion-buttons>
-      <ion-item lines="none" style="--padding-start: 0;" detail="false"
-        style="--background: white; color:black;margin-top: 15px;">
-        <ion-avatar slot="start">
-          <img src="assets/images/user.jfif" alt="User Avatar" />
-        </ion-avatar>
-        <ion-label
-          style="width: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <h2 style="margin: 0; font-size: 16px;">{{ receiverId   }}</h2>
-        </ion-label>
-      </ion-item>
-    </ion-buttons>
-
-    <ion-buttons slot="end" style="margin-top: 15px;">
-
-      <ion-button style="color: black;">
-        <ion-icon name="videocam-outline" style="font-size: 35px;"></ion-icon>
-      </ion-button>
-
-
-      <ion-button (click)="goToCallingScreen()" style="color: black;">
-        <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
-      </ion-button>
-
-
-      <ion-button style="color: black;">
-        <ion-icon name="ellipsis-vertical-outline" style="font-size: 28px;"></ion-icon>
-      </ion-button>
-
-    </ion-buttons>
-
-  </ion-toolbar>
-</ion-header>
 
 
 <!-- <ion-content class="chat-background">
@@ -276,6 +236,47 @@
     </div>
   </div>
 </ion-content> -->
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+
+    <ion-buttons slot="start" style="color: black; width: 8%;margin-top: 15px;">
+      <ion-back-button defaultHref="/home-screen"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons>
+      <ion-item lines="none" style="--padding-start: 0;" detail="false"
+        style="--background: white; color:black;margin-top: 15px;">
+        <ion-avatar slot="start">
+          <img src="assets/images/user.jfif" alt="User Avatar" />
+        </ion-avatar>
+        <ion-label
+          style="width: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <h2 style="margin: 0; font-size: 16px;">{{ receiverId   }}</h2>
+        </ion-label>
+      </ion-item>
+    </ion-buttons>
+
+    <ion-buttons slot="end" style="margin-top: 15px;">
+
+      <ion-button style="color: black;">
+        <ion-icon name="videocam-outline" style="font-size: 35px;"></ion-icon>
+      </ion-button>
+
+
+      <ion-button (click)="goToCallingScreen()" style="color: black;">
+        <ion-icon name="call-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+
+      <ion-button style="color: black;">
+        <ion-icon name="ellipsis-vertical-outline" style="font-size: 28px;"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
 
 
 <ion-content class="chat-background">

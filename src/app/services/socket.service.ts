@@ -44,7 +44,7 @@
 
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment'; // or use your server URL directly
+import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -52,7 +52,8 @@ import { Observable } from 'rxjs';
 })
 export class SocketService {
   private socket: Socket;
-  private readonly serverUrl = 'http://localhost:3000'; // Replace with your actual backend URL
+  // private readonly serverUrl = 'http://localhost:3000'; 
+  private readonly serverUrl = 'https://websocket-8rgr.onrender.com/'; 
 
   constructor() {
     const userId = localStorage.getItem('userId');
