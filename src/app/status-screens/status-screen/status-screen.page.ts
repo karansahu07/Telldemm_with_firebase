@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, PopoverController } from '@ionic/angular';
 import { FooterTabsComponent } from "../../components/footer-tabs/footer-tabs.component";
 import { Router } from '@angular/router';
-import { MenuPopoverComponent } from '../../components/menu-popover/menu-popover.component'; 
+import { MenuPopoverComponent } from '../../components/menu-popover/menu-popover.component'; // Add this impor
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 
@@ -87,12 +87,4 @@ export class StatusScreenPage implements OnInit {
   toggleIcon() {
     this.isRotated = !this.isRotated;
   }
-
-  // slideOpts = {
-  //   direction: 'vertical',
-  //   slidesPerView: 1,  // or 1, 3, etc. Adjust as needed
-  //   spaceBetween: 10,
-  //   freeMode: true
-  // };
-
 }

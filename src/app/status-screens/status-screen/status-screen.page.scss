@@ -2,12 +2,106 @@ ion-content {
     --background: white;
 }
 
+.telldemm {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    --background: white;
+}
+
+.main-header {
+    display: flex;
+    padding-top: 30px;
+}
+
+.header-name {
+    color: #FF1414;
+    font-family: Montserrat-bold;
+    font-size: 20px
+}
+
+.header-icons {
+    display: flex;
+    margin-right: 10px;
+}
+
+.header-img {
+    width: 24px;
+    height: 24px;
+}
+
 .Your {
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
     font-size: 20px;
     color: #000000;
     margin-left: 16px;
+}
+
+.slider {
+    margin-left: 16px;
+}
+
+.slider-swip {
+    width: 70px !important;
+    flex-shrink: 0;
+}
+
+.main-black {
+    display: flex;
+    margin-left: 16px;
+    justify-content: space-between;
+}
+
+.image-wrapper {
+    position: relative;
+    width: 120px;
+    height: auto;
+}
+
+.Ellipse {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30%;
+    height: auto;
+    pointer-events: none;
+}
+
+.image-wrapperss {
+    position: relative;
+    width: 71px;
+    height: 106px;
+    background: #444343;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 6px;
+}
+
+.Ellipseee {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 50%;
+    height: auto;
+    pointer-events: none;
+}
+
+.plusimg {
+    position: absolute;
+    top: 25px;
+    left: 28px;
+    right: 0;
+    width: 22%;
+}
+
+.Add-status {
+    margin: 0;
+    font-size: 13px;
+    font-family: Montserrat-SemiBold;
+    color: white;
 }
 
 .Status {
@@ -34,20 +128,10 @@ ion-content {
     transition: transform 0.3s ease;
 }
 
-.image-wrapper {
-    position: relative;
-    width: 120px;
-    /* adjust as needed */
-    height: auto;
-}
-
-.Ellipse {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 50%;
-    height: auto;
-    pointer-events: none;
+.channels-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .channels {
@@ -57,106 +141,11 @@ ion-content {
     font-family: Open Sans, Semibold;
 }
 
-ion-toolbar {
-    --background: white;
-    color: black;
-}
-
-.tick-icon {
-    vertical-align: middle;
-}
-
-.tick-seen {
-    width: 22px;
-    vertical-align: middle;
-}
-
-.telldemm {
-    padding-top: 30px;
-}
-
-ion-title {
-    color: red;
-}
-
-ion-button img {
-    width: 24px;
-    height: 24px;
-}
-
-ion-content {
-    --background: white;
-}
-
-.main-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#searchInput {
-    width: 92%;
-    height: 46px;
-    border-radius: 10px;
-    font-size: 16px;
-    background-color: white;
-    background-image: url(https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-24.png);
-    background-position: 10px 10px;
-    background-repeat: no-repeat;
-    padding: 8px 20px 8px 40px;
-    color: black;
-    border: 1px solid black;
-}
-
-.filters {
-    color: black;
-    display: flex;
-}
-
-.main-filters {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.filters {
-    width: 92%;
-    display: flex;
-    gap: 10px;
-}
-
-.filter-link {
-    background: #444343;
-    color: #AEACAC;
-    padding: 8px 15px 8px 15px;
-    border-radius: 15px;
-    font-family: Montserrat-Medium;
-    font-size: 14px;
-    margin: 15px 0px 10px 0px;
-}
-
-.active-filter {
-    background-color: #FFD2D2 !important;
-    color: #FF1414 !important;
-}
-
-
 ion-list {
     background: white;
     padding-left: 5px;
     padding-right: 8px;
 
-}
-
-ion-toolbar {
-    color: black;
 }
 
 ion-item {
@@ -185,7 +174,7 @@ ion-item {
 }
 
 .chat-message {
-    color:#000000;
+    color: #000000;
     display: flex;
     align-items: center;
     font-size: 17px;
@@ -200,13 +189,13 @@ ion-item {
     font-family: Montserrat-Regular;
 }
 
-.followers{
+.followers {
     font-family: Open Sans, Semibold;
     font-size: 12px;
     color: #444343;
 }
 
-.chat-meta button{
+.chat-meta button {
     color: #FFFFFF;
     background: #2B2B2B;
     font-family: Open Sans, Semibold;
@@ -221,68 +210,4 @@ ion-badge {
     height: 15px;
     color: white;
     background: #FF1414;
-}
-
-.icon-image {
-    background: #FF1414;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    width: 60px;
-    height: 60px;
-}
-
-ion-fab {
-    margin-right: 15px;
-}
-
-.footer-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: inherit;
-    padding: 8px;
-    min-width: 70px;
-}
-
-.footer-link img {
-    width: 24px;
-    height: 24px;
-}
-
-.footer-link ion-label {
-    font-size: 12px;
-    text-align: center;
-}
-
-.footer-buttons {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-}
-
-.check-icon {
-    font-size: 16px;
-    color: gray;
-    margin-right: 4px;
-    vertical-align: middle;
-}
-
-.message-row {
-    display: flex;
-    align-items: center;
-}
-
-.check-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
-}
-
-.chat-text {
-    margin: 0;
 }
