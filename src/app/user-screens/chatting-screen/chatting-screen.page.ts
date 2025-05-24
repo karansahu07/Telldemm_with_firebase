@@ -25,7 +25,7 @@
 
 
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -48,7 +48,7 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
 
   private socketService = inject(SocketService);
   private route = inject(ActivatedRoute);
-  router: any;
+  private router = inject(Router);
 
   ngOnInit() {
     // this.senderId = localStorage.getItem('userId') || '';
@@ -100,6 +100,7 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
   }
 
   goToCallingScreen() {
+    console.log('Navigating to calling screen...');
      this.router.navigate(['/calling-screen']);
    }
 
