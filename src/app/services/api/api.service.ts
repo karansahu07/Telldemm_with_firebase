@@ -18,18 +18,18 @@ export class ApiService {
 
   /**
    * Send OTP to user
-   * @param phone 
+   * @param phone_number 
    */
-  sendOtp(phone: string): Observable<any> {
-    return this.post('/send-otp', { phone });
+  sendOtp(phone_number: string): Observable<any> {
+    return this.post('/send-otp', { phone_number });
   }
 
   /**
    * Verify OTP
-   * @param phone 
-   * @param otp 
+   * @param phone_number 
+   * @param otp_code 
    */
-  verifyOtp(phone: string, otp: string): Observable<any> {
-    return this.post('/verify-otp', { phone, otp });
+  verifyOtp(phone_number: string, otp_code: string): Observable<any> {
+    return this.post('/verify-otp', { phone_number, otp_code });
   }
 }

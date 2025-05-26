@@ -925,10 +925,10 @@ export class LoginScreenPage {
     }
 
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
-    const payload = { phone: fullPhone };
+    const payload = { phone_number: fullPhone };
 
     try {
-      const res: any = await this.api.post('/send-otp', payload).toPromise();
+      const res: any = await this.api.post('/api/send-otp', payload).toPromise();
       console.log('OTP sent response:', res);
 
       if (res.status) {
@@ -975,10 +975,10 @@ export class LoginScreenPage {
 
     const otpCode = this.otp.join('');
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
-    const payload = { phone: fullPhone, otp: otpCode };
+    const payload = { phone_number: fullPhone, otp_code: otpCode };
 
     try {
-      const res: any = await this.api.post('/verify-otp', payload).toPromise();
+      const res: any = await this.api.post('/api/verify-otp', payload).toPromise();
       console.log('OTP verification response:', res);
 
       if (res.status) {
