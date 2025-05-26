@@ -282,15 +282,14 @@ input[type=number]::-webkit-outer-spin-button {
 
 //cdfgdgdf
 
-.resend-otp-section {
+.resend-section {
   text-align: center;
-  font-size: 14px;
+  color: #555;
   margin-top: 10px;
+
+  span {
+    cursor: pointer;
+    font-weight: 500;
+  }
 }
 
-.resend-otp-section button {
-  background-color: transparent;
-  color: #007bff;
-  border: none;
-  cursor: pointer;
-}

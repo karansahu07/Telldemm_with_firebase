@@ -217,16 +217,8 @@
           </div>
 
           <div class="phone-wrapper">
-            <input
-              type="tel"
-              maxlength="10"
-              placeholder="Enter mobile number"
-              [(ngModel)]="phoneNumber"
-              name="phone"
-              style="text-align: left;"
-              pattern="[0-9]*"
-              inputmode="numeric"
-              (keypress)="allowOnlyNumbers($event)" />
+            <input type="tel" maxlength="10" placeholder="Enter mobile number" [(ngModel)]="phoneNumber" name="phone"
+              style="text-align: left;" pattern="[0-9]*" inputmode="numeric" (keypress)="allowOnlyNumbers($event)" />
             <p class="underline-country"></p>
           </div>
         </div>
@@ -247,7 +239,7 @@
 <!-- <div id="recaptcha-container"></div> -->
 
 <!-- OTP Popup -->
-<div *ngIf="showOtpPopup" class="otp-popup-wrapper">
+<!-- <div *ngIf="showOtpPopup" class="otp-popup-wrapper">
   <div class="backgrounds">
     <div class="opt">
       <p>Enter Your OTP</p>
@@ -279,5 +271,45 @@
       <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
     </div>
   </div>
-</div>
+</div> -->
 
+
+<div *ngIf="showOtpPopup" class="otp-popup-wrapper">
+  <div class="backgrounds">
+    <div class="opt">
+      <p>Enter Your OTP</p>
+    </div>
+
+    <div class="border-line"></div>
+
+    <div class="otp-input">
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 0)"
+        (keydown)="handleBackspace($event, 0)" (paste)="$event.preventDefault()" #otp0>
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 1)"
+        (keydown)="handleBackspace($event, 1)" (paste)="$event.preventDefault()" #otp1>
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 2)"
+        (keydown)="handleBackspace($event, 2)" (paste)="$event.preventDefault()" #otp2>
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 3)"
+        (keydown)="handleBackspace($event, 3)" (paste)="$event.preventDefault()" #otp3>
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 4)"
+        (keydown)="handleBackspace($event, 4)" (paste)="$event.preventDefault()" #otp4>
+      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 5)"
+        (keydown)="handleBackspace($event, 5)" (paste)="$event.preventDefault()" #otp5>
+    </div>
+
+    <div class="submit" style="margin-bottom: 10px;">
+      <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
+    </div>
+
+    <div class="resend-section">
+      <p>Didn't receive code?</p>
+      <p>
+        <span [style.color]="timer === 0 ? '#6e1911' : '#888'" (click)="resendOtp()"
+          [style.pointerEvents]="timer === 0 ? 'auto' : 'none'">
+          Resend
+        </span> - {{ getFormattedTime() }}
+      </p>
+    </div>
+
+  </div>
+</div>
