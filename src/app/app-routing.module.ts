@@ -48,6 +48,11 @@ const routes: Routes = [
     path: 'see-status-screen',
     loadChildren: () => import('./status-screens/see-status-screen/see-status-screen.module').then( m => m.SeeStatusScreenPageModule)
   },
+  {
+  path: 'profile-setup',
+  loadComponent: () => import('./components/profile-setup/profile-setup.page').then(m => m.ProfileSetupPage)
+}
+
 ];
 
 @NgModule({

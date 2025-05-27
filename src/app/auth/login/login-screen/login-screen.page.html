@@ -234,44 +234,20 @@
       </div>
     </div>
   </ion-content>
+  <ion-modal [isOpen]="showConfirmPopup" class="confirm-popup">
+  <ng-template>
+    <div class="popup-container">
+      <p class="popup-message">Is this your mobile number?</p>
+      <h2 class="popup-number">{{ countryCode + phoneNumber }}</h2>
+
+      <div class="popup-buttons">
+        <button class="popup-btn edit" (click)="onEdit()">Edit</button>
+        <button class="popup-btn ok" (click)="onConfirm()">OK</button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
 </div>
-
-<!-- <div id="recaptcha-container"></div> -->
-
-<!-- OTP Popup -->
-<!-- <div *ngIf="showOtpPopup" class="otp-popup-wrapper">
-  <div class="backgrounds">
-    <div class="opt">
-      <p>Enter Your OTP</p>
-    </div>
-
-    <div class="border-line"></div>
-
-    <div class="otp-input">
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 0)"
-        (keydown)="handleBackspace($event, 0)" (paste)="$event.preventDefault()" #otp0>
-
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 1)"
-        (keydown)="handleBackspace($event, 1)" (paste)="$event.preventDefault()" #otp1>
-
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 2)"
-        (keydown)="handleBackspace($event, 2)" (paste)="$event.preventDefault()" #otp2>
-
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 3)"
-        (keydown)="handleBackspace($event, 3)" (paste)="$event.preventDefault()" #otp3>
-
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 4)"
-        (keydown)="handleBackspace($event, 4)" (paste)="$event.preventDefault()" #otp4>
-
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 5)"
-        (keydown)="handleBackspace($event, 5)" (paste)="$event.preventDefault()" #otp5>
-    </div>
-
-    <div class="submit" style="margin-bottom: 30px;">
-      <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
-    </div>
-  </div>
-</div> -->
 
 
 <div *ngIf="showOtpPopup" class="otp-popup-wrapper">

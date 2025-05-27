@@ -293,3 +293,93 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
+
+/* Blur background when modal is open */
+.confirm-popup::part(backdrop) {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Remove default padding & center content */
+.confirm-popup::part(content) {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  position: relative;
+}
+
+/* Center the popup container */
+.popup-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 0.3s ease;
+}
+
+/* Popup text styles */
+.popup-message {
+  font-size: 16px;
+  color: #444;
+}
+
+.popup-number {
+  font-size: 20px;
+  margin: 12px 0;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Button layout */
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Button base */
+.popup-btn {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Edit button */
+.popup-btn.edit {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* OK button */
+.popup-btn.ok {
+  background-color: #6e1911;
+  color: white;
+}
+
+/* Smooth popup animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+
+
