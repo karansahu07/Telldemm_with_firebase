@@ -14,5 +14,5 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://websocket-8rgr.onrender.com'
+  apiBaseUrl: 'https://telldemm-backend.onrender.com'
 };
