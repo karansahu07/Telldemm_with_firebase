@@ -1116,7 +1116,7 @@ export class LoginScreenPage {
     const payload = { phone_number: fullPhone };
 
     try {
-      const res: any = await this.api.post('/api/send-otp', payload).toPromise();
+      const res: any = await this.api.post('/api/auth/send-otp', payload).toPromise();
       console.log('OTP sent response:', res);
 
       if (res.status) {
@@ -1166,7 +1166,7 @@ export class LoginScreenPage {
     const payload = { phone_number: fullPhone, otp_code: otpCode };
 
     try {
-      const res: any = await this.api.post('/api/verify-otp', payload).toPromise();
+      const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
       console.log('OTP verification response:', res);
 
       if (res.status) {

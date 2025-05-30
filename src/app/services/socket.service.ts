@@ -53,7 +53,7 @@ import { Observable } from 'rxjs';
 export class SocketService {
   private socket: Socket;
   // private readonly serverUrl = 'http://localhost:3000'; 
-  private readonly serverUrl = 'https://websocket-8rgr.onrender.com/'; 
+  private readonly serverUrl = 'https://telldemm-backend.onrender.com/'; 
 
   constructor() {
     const userId = localStorage.getItem('userId');
