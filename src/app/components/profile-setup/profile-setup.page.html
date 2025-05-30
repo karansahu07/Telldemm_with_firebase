@@ -28,21 +28,21 @@
   <ion-toolbar>
 
     <!-- Left-side Cancel Icon -->
-    <ion-buttons slot="start">
+    <!-- <ion-buttons slot="start">
       <ion-button>
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
 
     <ion-title>Profile info</ion-title>
 
     <!-- Right-side Three Dots Icon -->
-    <ion-buttons slot="end">
-      <ion-button>
+    <!-- <ion-buttons slot="end">
+      <ion-button> -->
         <!-- <ion-icon name="ellipsis-vertical-outline"></ion-icon> -->
-        <ion-icon name="ellipsis-vertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+        <!-- <ion-icon name="ellipsis-vertical"></ion-icon> -->
+      <!-- </ion-button>
+    </ion-buttons> -->
 
   </ion-toolbar>
 </ion-header>
@@ -58,12 +58,23 @@
         </div>
       </div>
       <div class="camera-main">
-        <div class="camera-inner">
-          <img [src]="imageData || 'assets/images/cameraplus.png'" alt="Avatar" />
-        </div>
-      </div>
+  <div class="camera-inner">
+    <img
+      class="avatar-image"
+      [src]="imageData || 'assets/images/cameraplus.png'"
+      alt="Avatar"
+      (click)="fileInput.click()"
+      style="cursor: pointer;" />
+  </div>
+</div>
 
-      <input type="file" (change)="onImageSelected($event)" accept="image/*" />
+<input
+  type="file"
+  #fileInput
+  hidden
+  (change)="onImageSelected($event)"
+  accept="image/*" />
+
 
       <div class="line-main">
         <input type="text" class="line-content no-focus-border"[(ngModel)]="name" placeholder="Enter your name" maxlength="25" (input)="onInputChange($event)"/>
