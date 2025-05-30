@@ -1042,12 +1042,11 @@ export class LoginScreenPage {
     private encryptionService: EncryptionService
   ) { }
 
-  async showToast(message: string) {
+  async showToast(message: string, color: 'danger' | 'success' | 'dark' = 'dark') {
     const toast = await this.toastController.create({
       message,
       duration: 2000,
-      position: 'bottom',
-      color: 'dark'
+      color,
     });
     toast.present();
   }
@@ -1098,7 +1097,7 @@ export class LoginScreenPage {
   onAgreeClick() {
     this.phoneNumber = this.phoneNumber.trim();
     if (!this.isPhoneValid()) {
-      this.showToast('Please enter a valid 10-digit mobile number.');
+      this.showToast('Please enter a valid 10-digit mobile number.', 'danger');
       return;
     }
     this.showConfirmPopup = true;
@@ -1130,7 +1129,7 @@ export class LoginScreenPage {
       }
     } catch (err) {
       console.error('Error sending OTP:', err);
-      this.showToast('Failed to send OTP. Try again.');
+      this.showToast('Failed to send OTP. Try again.', 'danger');
     }
   }
 
@@ -1172,7 +1171,8 @@ export class LoginScreenPage {
       console.log('OTP verification response:', res);
 
       if (res.status) {
-        this.showToast('Login successful!');
+        this.showToast('Login successful!', 'success');
+        localStorage.setItem("phone_number", this.phoneNumber);
         // this.router.navigateByUrl('/home-screen');
         //khusha
         localStorage.setItem("userId", "28");
@@ -1195,7 +1195,7 @@ export class LoginScreenPage {
       }
     } catch (err) {
       console.error('OTP verification failed:', err);
-      this.showToast('Failed to verify OTP. Try again.');
+      this.showToast('Failed to verify OTP. Try again.', 'danger');
     }
   }
 }

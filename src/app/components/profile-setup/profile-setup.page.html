@@ -24,25 +24,14 @@
 
 
 
-<ion-header [translucent]="true" class="background" style="padding-top: 30px;">
+<!-- <ion-header [translucent]="true" class="background" style="padding-top: 30px;">
   <ion-toolbar>
 
-    <!-- Left-side Cancel Icon -->
-    <!-- <ion-buttons slot="start">
-      <ion-button>
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons> -->
+    
 
     <ion-title>Profile info</ion-title>
 
-    <!-- Right-side Three Dots Icon -->
-    <!-- <ion-buttons slot="end">
-      <ion-button> -->
-        <!-- <ion-icon name="ellipsis-vertical-outline"></ion-icon> -->
-        <!-- <ion-icon name="ellipsis-vertical"></ion-icon> -->
-      <!-- </ion-button>
-    </ion-buttons> -->
+    
 
   </ion-toolbar>
 </ion-header>
@@ -89,5 +78,73 @@
     <div class="main-button">
       <button class="btn" expand="block" (click)="onSubmit()">Next</button>
     </div>
+  </div>
+</ion-content> -->
+
+
+<ion-header [translucent]="true" class="background" style="padding-top: 30px;">
+  <ion-toolbar>
+
+   
+
+    <ion-title>Profile info</ion-title>
+
+    
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="main-content">
+    <form #profileForm="ngForm" (ngSubmit)="onSubmit()">
+      <div>
+        <div class="main-provide">
+          <div class="inner-main">
+            <p class="Please">Please provide your name and an optional Profile photo</p>
+          </div>
+        </div>
+
+        <div class="camera-main">
+          <div class="camera-inner">
+            <img
+              class="avatar-image"
+              [src]="imageData || 'assets/images/cameraplus.png'"
+              alt="Avatar"
+              (click)="fileInput.click()"
+              style="cursor: pointer;" />
+          </div>
+        </div>
+
+        <input
+          type="file"
+          #fileInput
+          hidden
+          (change)="onImageSelected($event)"
+          accept="image/*" />
+
+        <div class="line-main">
+          <input
+            type="text"
+            class="line-content no-focus-border"
+            name="name"
+            [(ngModel)]="name"
+            placeholder="Enter your name"
+            maxlength="25"
+            required
+            (input)="onInputChange($event)" />
+
+          <div class="main-emoji">
+            <p class="emoji-text">{{ remainingCount }}</p>
+            <ion-icon name="happy-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="line"></div>
+      </div>
+ <div class="main-button">
+        <button class="btn" expand="block" type="submit" [disabled]="!profileForm.form.valid">Next</button>
+      </div>
+      
+    </form>
+   
   </div>
 </ion-content>
