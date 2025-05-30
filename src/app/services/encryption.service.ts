@@ -164,4 +164,49 @@ export class EncryptionService {
     }
     return buffer.buffer;
   }
+
+
+/** Decrypt message with AES-CBC */
+async decryptMessageAES(
+  encryptedHex: string,
+  ivHex: string,
+  aesKey: CryptoKey
+): Promise<string> {
+  try {
+    const iv = this.hexToArrayBuffer(ivHex);
+    const encryptedBuffer = this.hexToArrayBuffer(encryptedHex);
+
+    const decryptedBuffer = await window.crypto.subtle.decrypt(
+      {
+        name: 'AES-CBC',
+        iv
+      },
+      aesKey,
+      encryptedBuffer
+    );
+
+    return new TextDecoder().decode(decryptedBuffer);
+  } catch (error) {
+    console.error('Decryption Error:', error);
+    throw new Error('Failed to decrypt message');
+  }
+}
+
+/** Decrypt an incoming message */
+async decryptMessage(
+  encryptedHex: string,
+  ivHex: string,
+  senderPublicKeyHex: string
+): Promise<string> {
+  try {
+    // Derive AES key using sender's public key and receiver's private key
+    const aesKey = await this.deriveAESKey(senderPublicKeyHex);
+
+    // Decrypt the message
+    return await this.decryptMessageAES(encryptedHex, ivHex, aesKey);
+  } catch (error) {
+    console.error('Decrypt Message Error:', error);
+    throw new Error('Failed to decrypt message');
+  }
+}
 }

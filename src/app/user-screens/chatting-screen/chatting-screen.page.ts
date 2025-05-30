@@ -261,11 +261,7 @@ async sendMessage() {
   console.error('Failed to send message:', err);
 }
 
-  // or
-  // await this.apiService.post('/api/messages/send', payload).toPromise();
-
-
-  // post: https://telldemm-backend.onrender.com/api/chats/send
+ 
 
 }
 
