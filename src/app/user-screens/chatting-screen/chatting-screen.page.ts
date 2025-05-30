@@ -134,7 +134,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { SocketService } from '../../services/socket.service';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { EncryptionService } from 'src/app/services/encryption.service';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   selector: 'app-chatting-screen',
@@ -148,11 +150,15 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   messageText: string = '';
   receiverId: string = '';
   senderId: string = '';
+  receiverPublicKeyHex: string = '';
   private messageSub: Subscription | undefined;
 
   private socketService = inject(SocketService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+
+  receiverPhoneNumber: string = '+911234567890'; // static
+  constructor(private encryptionService: EncryptionService,private apiService:ApiService) { }
 
   @ViewChild('scrollContainer') private scrollContainer: ElementRef | undefined;
 
@@ -180,28 +186,76 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => this.scrollToBottom(), 300);
   }
 
-  sendMessage() {
-    if (!this.messageText.trim()) return;
+  // sendMessage() {
+  //   if (!this.messageText.trim()) return;
 
-    const message = {
-      type: 'private',
-      sender_id: this.senderId,
-      receiver_id: this.receiverId,
-      text: this.messageText.trim(),
-      timestamp: new Date().toLocaleTimeString()
-    };
+  //   const message = {
+  //     type: 'private',
+  //     sender_id: this.senderId,
+  //     receiver_id: this.receiverId,
+  //     text: this.messageText.trim(),
+  //     timestamp: new Date().toLocaleTimeString()
+  //   };
 
-    // Push sent message locally for immediate UI response
-    this.messages.push(message);
-    this.saveToLocalStorage();
-    this.scrollToBottom();
+  //   // Push sent message locally for immediate UI response
+  //   this.messages.push(message);
+  //   this.saveToLocalStorage();
+  //   this.scrollToBottom();
 
-    // Send to server
-    this.socketService.sendMessage(message);
+  //   // Send to server
+  //   this.socketService.sendMessage(message);
 
-    // Clear input
-    this.messageText = '';
+  //   // Clear input
+  //   this.messageText = '';
+  // }
+  userID:String="";
+async sendMessage() {
+  this.userID = "28";
+  // Step 1: Get receiver's public key using ApiService
+  if (!this.receiverPublicKeyHex) {
+    const response = await firstValueFrom(
+      this.apiService.get<{ publicKeyHex: string }>(
+        `/api/users/profile?user_id=${this.userID}`
+      )
+    );
+    this.receiverPublicKeyHex = response.publicKeyHex;
   }
+
+  // Step 2: Build encrypted payload
+  const payload = await this.encryptionService.buildEncryptedPayload(
+    this.messageText,
+    this.receiverPhoneNumber,
+    this.receiverPublicKeyHex
+  );
+
+  console.log('Encrypted Payload:', payload);
+
+//   {
+//     "senderId": 28,
+//     "receiverPhoneNumber": "+911234567890",
+//     "encryptedMessage": {
+//         "iv": "7f12b085a95dc196290c6ba6a75ed201",
+//         "encryptedText": "baa377dc851af7627e7c165233aa87df"
+//     },
+//     "messageType": "text"
+// }
+
+  // Step 3: Send encrypted payload (via WebSocket or HTTP)
+  // Example:
+  // this.socket.emit('sendMessage', payload);
+  // or
+  // await this.apiService.post('/api/messages/send', payload).toPromise();
+
+
+  // post: https://telldemm-backend.onrender.com/api/chats/send
+
+}
+
+
+
+
+
+
 
   saveToLocalStorage() {
     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));

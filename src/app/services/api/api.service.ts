@@ -32,4 +32,13 @@ export class ApiService {
   verifyOtp(phone_number: string, otp_code: string): Observable<any> {
     return this.post('/verify-otp', { phone_number, otp_code });
   }
+
+
+  get<T>(url: string, params?: any): Observable<T> {
+  return this.http.get<T>(`${this.baseUrl}${url}`, { params });
+}
+
+
+  
+
 }

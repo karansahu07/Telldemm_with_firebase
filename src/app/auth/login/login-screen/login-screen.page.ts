@@ -1002,6 +1002,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api/api.service';
+import { EncryptionService } from 'src/app/services/encryption.service';
 
 @Component({
   selector: 'app-login-screen',
@@ -1037,8 +1038,9 @@ export class LoginScreenPage {
   constructor(
     private api: ApiService,
     private router: Router,
-    private toastController: ToastController
-  ) {}
+    private toastController: ToastController,
+    private encryptionService: EncryptionService
+  ) { }
 
   async showToast(message: string) {
     const toast = await this.toastController.create({
@@ -1122,7 +1124,7 @@ export class LoginScreenPage {
       if (res.status) {
         this.showOtpPopup = true;
         this.startTimer();
-        localStorage.setItem("userId", this.phoneNumber);
+        // localStorage.setItem("userId", this.phoneNumber);
       } else {
         this.showToast(res.message || 'Failed to send OTP.');
       }
@@ -1172,6 +1174,21 @@ export class LoginScreenPage {
       if (res.status) {
         this.showToast('Login successful!');
         // this.router.navigateByUrl('/home-screen');
+        //khusha
+        localStorage.setItem("userId", "28");
+        const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
+        // send your publicKeyHex to server or share with contacts
+        console.log('Your public key:', publicKeyHex);
+        //on basis of userid save public key user table
+        // post https://telldemm-backend.onrender.com/api/users/update-public-key
+        // payload 
+        //         {
+        //   "user_id": 28,
+        //   "public_key": "abcd1234ecchexvalue"
+        // }
+        //khusha
+
+
         this.router.navigateByUrl('/profile-setup');
       } else {
         this.showToast(res.message || 'Invalid OTP. Try again.');
