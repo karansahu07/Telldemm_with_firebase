@@ -116,25 +116,55 @@ export class SocketService {
    *   receiverId: string
    * }
    */
-  sendMessage(data: any) {
-    this.socket.emit('send_message', data);
+  // sendMessage(data: any) {
+  //   this.socket.emit('send_message', data);
+  // }
+
+  //  sendMessage(data: any) {
+  //   this.socket.emit('send_message', data);
+  // }
+
+  onMessageReceived(callback: (data: any) => void) {
+    this.socket.on('receive_message', callback);
   }
+
+  onError(callback: (error: any) => void) {
+    this.socket.on('error', callback);
+  }
+
+  emitMessage(payload: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    this.socket.emit('send_message', payload, (response: any) => {
+      if (response?.status === 'success') {
+        resolve(response); // This is your server's response
+      } else {
+        reject(response);
+      }
+    });
+  });
+}
+
+
+//  emitMessage(data: any) {
+//     this.socket.emit('send_message', data);
+//   }
+
 
   /**
    * Listen for incoming messages broadcasted by backend.
    */
-  onMessage(): Observable<any> {
-    return new Observable(observer => {
-      this.socket.on('receive_message', (msg) => {
-        console.log('Received message:', msg);
-        observer.next(msg);
-      });
-    });
-  }
+  // onMessage(): Observable<any> {
+  //   return new Observable(observer => {
+  //     this.socket.on('receive_message', (msg) => {
+  //       console.log('Received message:', msg);
+  //       observer.next(msg);
+  //     });
+  //   });
+  // }
 
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
-  }
+  // disconnect() {
+  //   if (this.socket) {
+  //     this.socket.disconnect();
+  //   }
+  // }
 }

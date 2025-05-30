@@ -213,29 +213,30 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   }
 
   listenToMessages() {
-    this.messageSub = this.socketService.onMessage().subscribe((msg) => {
-      const { senderId, message } = msg;
+    //comment by khusha
+    // this.messageSub = this.socketService.onMessage().subscribe((msg) => {
+    //   const { senderId, message } = msg;
 
-      const chat = this.chatList.find(c => c.userId === senderId);
-      if (chat) {
-        chat.message = message;
-        chat.unread = true;
-        chat.unreadCount += 1;
-        chat.time = new Date().toLocaleTimeString(); // Update to current time
-      } else {
-        // Optional: If message is from unknown user, add new chat card
-        this.chatList.push({
-          name: senderId, // You can replace this with actual user lookup
-          userId: senderId,
-          message: message,
-          messageStatus: 'received',
-          unread: true,
-          unreadCount: 1,
-          time: new Date().toLocaleTimeString(),
-          group: false
-        });
-      }
-    });
+    //   const chat = this.chatList.find(c => c.userId === senderId);
+    //   if (chat) {
+    //     chat.message = message;
+    //     chat.unread = true;
+    //     chat.unreadCount += 1;
+    //     chat.time = new Date().toLocaleTimeString(); // Update to current time
+    //   } else {
+    //     // Optional: If message is from unknown user, add new chat card
+    //     this.chatList.push({
+    //       name: senderId, // You can replace this with actual user lookup
+    //       userId: senderId,
+    //       message: message,
+    //       messageStatus: 'received',
+    //       unread: true,
+    //       unreadCount: 1,
+    //       time: new Date().toLocaleTimeString(),
+    //       group: false
+    //     });
+    //   }
+    // });
   }
 
   get filteredChats() {

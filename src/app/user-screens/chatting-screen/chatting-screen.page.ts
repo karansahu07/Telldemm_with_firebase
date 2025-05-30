@@ -157,29 +157,35 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  receiverPhoneNumber: string = '+911234567890'; // static
+  // receiverPhoneNumber: string = '+919138152160'; // static
+  receiverPhoneNumber: string = ''; // static
+
+  
   constructor(private encryptionService: EncryptionService,private apiService:ApiService) { }
 
   @ViewChild('scrollContainer') private scrollContainer: ElementRef | undefined;
 
   ngOnInit() {
     this.senderId = localStorage.getItem('userId') || '';
-    this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+    // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+    //  this.receiverPhoneNumber = this.route.snapshot.paramMap.get('receiverId') || '';
+     this.receiverPhoneNumber = '+919138152160';//----khusha-----------from getting url append +91 or + as created problem while getting with + 
+
     console.log('Sender:', this.senderId);
     console.log('Receiver:', this.receiverId);
     this.loadFromLocalStorage();
 
-    this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
-      const isCurrentChat =
-        (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
-        (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
+    // this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
+    //   const isCurrentChat =
+    //     (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
+    //     (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
 
-      if (isCurrentChat) {
-        this.messages.push(msg);
-        this.saveToLocalStorage();
-        this.scrollToBottom();
-      }
-    });
+    //   if (isCurrentChat) {
+    //     this.messages.push(msg);
+    //     this.saveToLocalStorage();
+    //     this.scrollToBottom();
+    //   }
+    // });
   }
 
   ngAfterViewInit(): void {
@@ -209,6 +215,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   //   this.messageText = '';
   // }
   userID:String="";
+  lastMessageResponse:String="";
 async sendMessage() {
   this.userID = "28";
   // Step 1: Get receiver's public key using ApiService
@@ -242,7 +249,18 @@ async sendMessage() {
 
   // Step 3: Send encrypted payload (via WebSocket or HTTP)
   // Example:
-  // this.socket.emit('sendMessage', payload);
+  // this.socketService.emit('sendMessage', payload);
+  // this.socketService.emitMessage(payload); // <- EMIT METHOD CALLED HERE
+
+   // Emit with callback to receive response from server
+ try {
+  const result = await this.socketService.emitMessage(payload);
+  console.log('Message sent, server returned:', result);
+  this.lastMessageResponse = result;
+} catch (err) {
+  console.error('Failed to send message:', err);
+}
+
   // or
   // await this.apiService.post('/api/messages/send', payload).toPromise();
 
