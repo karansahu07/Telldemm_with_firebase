@@ -31,6 +31,21 @@ export class ProfileSetupPage {
     }
   }
 
+   maxLength = 25;
+  inputText = '';
+  remainingCount = this.maxLength;
+
+  onInputChange(event: any) {
+    const value = event.target.value;
+
+    if (value.length > this.maxLength) {
+      this.inputText = value.slice(0, this.maxLength);
+    } else {
+      this.inputText = value;
+    }
+    this.remainingCount = this.maxLength - this.inputText.length;
+  }
+
   async onSubmit() {
     if (!this.name.trim()) {
       const toast = await this.toastController.create({
