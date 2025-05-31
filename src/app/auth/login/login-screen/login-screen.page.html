@@ -229,24 +229,32 @@
       </div>
 
       <!-- Submit Button -->
-      <div class="agree-div">
+      <!-- <div class="agree-div">
         <button [disabled]="!isPhoneValid()" (click)="onAgreeClick()">Agree & Continue</button>
+      </div> -->
+
+      <div class="agree-div">
+        <button [disabled]="!isPhoneValid() || isSendingOtp" (click)="onAgreeClick()">
+          <ng-container *ngIf="!isSendingOtp">Agree & Continue</ng-container>
+          <ion-spinner *ngIf="isSendingOtp" name="crescent"></ion-spinner>
+        </button>
       </div>
+
     </div>
   </ion-content>
   <ion-modal [isOpen]="showConfirmPopup" class="confirm-popup">
-  <ng-template>
-    <div class="popup-container">
-      <p class="popup-message">Is this your mobile number?</p>
-      <h2 class="popup-number">{{ countryCode + phoneNumber }}</h2>
+    <ng-template>
+      <div class="popup-container">
+        <p class="popup-message">Is this your mobile number?</p>
+        <h2 class="popup-number">{{ countryCode + phoneNumber }}</h2>
 
-      <div class="popup-buttons">
-        <button class="popup-btn edit" (click)="onEdit()">Edit</button>
-        <button class="popup-btn ok" (click)="onConfirm()">OK</button>
+        <div class="popup-buttons">
+          <button class="popup-btn edit" (click)="onEdit()">Edit</button>
+          <button class="popup-btn ok" (click)="onConfirm()">OK</button>
+        </div>
       </div>
-    </div>
-  </ng-template>
-</ion-modal>
+    </ng-template>
+  </ion-modal>
 </div>
 
 
@@ -274,8 +282,12 @@
     </div>
 
     <div class="submit" style="margin-bottom: 10px;">
-      <button [disabled]="!isOtpComplete()" (click)="goToHome()">Submit</button>
+      <button [disabled]="!isOtpComplete() || isVerifyingOtp" (click)="goToHome()">
+        <ng-container *ngIf="!isVerifyingOtp">Submit</ng-container>
+        <ion-spinner *ngIf="isVerifyingOtp" name="crescent"></ion-spinner>
+      </button>
     </div>
+
 
     <div class="resend-section">
       <p>Didn't receive code?</p>

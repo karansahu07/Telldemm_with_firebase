@@ -21,6 +21,7 @@ export class ProfileSetupPage implements OnInit {
   maxLength = 25;
   inputText = '';
   remainingCount = this.maxLength;
+  isSubmitting: boolean = false;
 
   constructor(
     private toastController: ToastController,
@@ -65,32 +66,37 @@ export class ProfileSetupPage implements OnInit {
   }
 
   async onSubmit() {
-    if (!this.name.trim()) {
-      this.showToast('Please enter your name', 'danger');
-      return;
-    }
-
-    const payload = {
-      phone_number: this.phoneNumber,
-      name: this.name,
-      profile_picture: this.imageData ? this.imageData.toString() : null,
-    };
-
-    this.http.post(`${environment.apiBaseUrl}/api/users`, payload).subscribe({
-      next: async () => {
-        // this.showToast('Profile saved successfully!', 'success');
-
-        localStorage.setItem('name', this.name);
-        if (this.imageData) {
-          localStorage.setItem('profile_url', this.imageData.toString());
-        }
-
-        this.router.navigateByUrl('/home-screen');
-      },
-      error: async (err) => {
-        console.error(err);
-        // this.showToast('Failed to save profile. Please try again.', 'danger');
-      },
-    });
+  if (!this.name.trim()) {
+    this.showToast('Please enter your name', 'danger');
+    return;
   }
+
+  this.isSubmitting = true; 
+
+  const payload = {
+    phone_number: this.phoneNumber,
+    name: this.name,
+    profile_picture: this.imageData ? this.imageData.toString() : null,
+  };
+
+  this.http.post(`${environment.apiBaseUrl}/api/users`, payload).subscribe({
+    next: async () => {
+      localStorage.setItem('name', this.name);
+       // this.showToast('Profile saved successfully!', 'success');
+      if (this.imageData) {
+        localStorage.setItem('profile_url', this.imageData.toString());
+      }
+
+      this.router.navigateByUrl('/home-screen');
+    },
+    error: async (err) => {
+      console.error(err);
+      // this.showToast('Failed to save profile. Please try again.', 'danger');
+    },
+    complete: () => {
+      this.isSubmitting = false; 
+    }
+  });
+}
+
 }

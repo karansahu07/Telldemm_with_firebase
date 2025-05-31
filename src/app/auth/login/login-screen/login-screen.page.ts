@@ -1034,6 +1034,9 @@ export class LoginScreenPage {
   ];
 
   @ViewChildren('otp0, otp1, otp2, otp3, otp4, otp5') otpInputs!: QueryList<ElementRef>;
+  isLoading: boolean = false;
+  isSendingOtp: boolean = false;
+  isVerifyingOtp: boolean = false;
 
   constructor(
     private api: ApiService,
@@ -1042,6 +1045,7 @@ export class LoginScreenPage {
     private encryptionService: EncryptionService
   ) { }
 
+  // Utility to show toast messages
   async showToast(message: string, color: 'danger' | 'success' | 'dark' = 'dark') {
     const toast = await this.toastController.create({
       message,
@@ -1051,24 +1055,29 @@ export class LoginScreenPage {
     toast.present();
   }
 
+  // Allow only numeric input
   allowOnlyNumbers(event: KeyboardEvent) {
     if (!/^\d$/.test(event.key)) event.preventDefault();
   }
 
+  // Phone number validation
   isPhoneValid(): boolean {
     return /^\d{10}$/.test(this.phoneNumber.trim());
   }
 
+  // Check if all OTP fields are filled
   isOtpComplete(): boolean {
     return this.otp.every(d => d.trim().length === 1);
   }
 
+  // Format timer for display
   getFormattedTime(): string {
     const minutes = Math.floor(this.timer / 60);
     const seconds = this.timer % 60;
     return `${('0' + minutes).slice(-2)} : ${('0' + seconds).slice(-2)}`;
   }
 
+  // Start countdown for OTP resend
   startTimer() {
     this.timer = 60;
     clearInterval(this.timerInterval);
@@ -1081,12 +1090,14 @@ export class LoginScreenPage {
     }, 1000);
   }
 
+  // Trigger resend OTP if allowed
   resendOtp() {
     if (this.timer === 0) {
       this.sendOtp();
     }
   }
 
+  // Handle country code change from dropdown
   onCountryChange(event: any) {
     const selected = this.countries.find(c => c.name === event.target.value);
     if (selected) {
@@ -1094,6 +1105,7 @@ export class LoginScreenPage {
     }
   }
 
+  // Called when user clicks "Agree & Continue"
   onAgreeClick() {
     this.phoneNumber = this.phoneNumber.trim();
     if (!this.isPhoneValid()) {
@@ -1103,15 +1115,25 @@ export class LoginScreenPage {
     this.showConfirmPopup = true;
   }
 
+  // User edits phone number
   onEdit() {
     this.showConfirmPopup = false;
   }
 
+  // User confirms phone number, OTP is sent
+  // async onConfirm() {
+  //   this.showConfirmPopup = false;
+  //   await this.sendOtp();
+  // }
+
   async onConfirm() {
     this.showConfirmPopup = false;
-    await this.sendOtp();
+    this.isSendingOtp = true;  // Start loader
+    await this.sendOtp();      // Call OTP send
+    this.isSendingOtp = false; // Stop loader when done
   }
 
+  // Send OTP to the entered number
   async sendOtp() {
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
     const payload = { phone_number: fullPhone };
@@ -1123,7 +1145,6 @@ export class LoginScreenPage {
       if (res.status) {
         this.showOtpPopup = true;
         this.startTimer();
-        // localStorage.setItem("userId", this.phoneNumber);
       } else {
         this.showToast(res.message || 'Failed to send OTP.');
       }
@@ -1133,6 +1154,7 @@ export class LoginScreenPage {
     }
   }
 
+  // Handle OTP input logic
   onOtpInput(event: any, index: number) {
     const input = event.target.value;
     if (!/^\d$/.test(input)) {
@@ -1147,6 +1169,7 @@ export class LoginScreenPage {
     }
   }
 
+  // Handle backspace on OTP input
   handleBackspace(event: KeyboardEvent, index: number) {
     if (event.key === 'Backspace') {
       if (!this.otp[index] && index > 0) {
@@ -1156,15 +1179,19 @@ export class LoginScreenPage {
     }
   }
 
+  // Final verification step: Verify OTP and login
   async goToHome() {
     if (!this.isOtpComplete()) {
       this.showToast('Please enter the complete 6-digit OTP.');
       return;
     }
 
+    this.isLoading = true; // Start loading
     const otpCode = this.otp.join('');
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
     const payload = { phone_number: fullPhone, otp_code: otpCode };
+
+    this.isVerifyingOtp = true;
 
     try {
       const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
@@ -1172,10 +1199,11 @@ export class LoginScreenPage {
 
       if (res.status) {
         this.showToast('Login successful!', 'success');
-        localStorage.setItem("phone_number", this.phoneNumber);
+        localStorage.setItem("phone_number", `${this.countryCode}${this.phoneNumber}`);
+        localStorage.setItem("userId", res.user_id.toString());
         // this.router.navigateByUrl('/home-screen');
         //khusha
-        localStorage.setItem("userId", "28");
+        // localStorage.setItem("userId", "28");
         const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
         // send your publicKeyHex to server or share with contacts
         console.log('Your public key:', publicKeyHex);
@@ -1188,7 +1216,6 @@ export class LoginScreenPage {
         // }
         //khusha
 
-
         this.router.navigateByUrl('/profile-setup');
       } else {
         this.showToast(res.message || 'Invalid OTP. Try again.');
@@ -1196,6 +1223,8 @@ export class LoginScreenPage {
     } catch (err) {
       console.error('OTP verification failed:', err);
       this.showToast('Failed to verify OTP. Try again.', 'danger');
+    } finally {
+      this.isVerifyingOtp = false;
     }
   }
 }
