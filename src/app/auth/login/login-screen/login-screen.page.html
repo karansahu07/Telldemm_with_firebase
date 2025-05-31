@@ -236,7 +236,7 @@
       <div class="agree-div">
         <button [disabled]="!isPhoneValid() || isSendingOtp" (click)="onAgreeClick()">
           <ng-container *ngIf="!isSendingOtp">Agree & Continue</ng-container>
-          <ion-spinner *ngIf="isSendingOtp" name="crescent"></ion-spinner>
+          <ion-spinner *ngIf="isSendingOtp" name="crescent" color="light"></ion-spinner>
         </button>
       </div>
 

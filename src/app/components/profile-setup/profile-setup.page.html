@@ -85,11 +85,11 @@
 <ion-header [translucent]="true" class="background" style="padding-top: 30px;">
   <ion-toolbar>
 
-   
+
 
     <ion-title>Profile info</ion-title>
 
-    
+
 
   </ion-toolbar>
 </ion-header>
@@ -106,32 +106,16 @@
 
         <div class="camera-main">
           <div class="camera-inner">
-            <img
-              class="avatar-image"
-              [src]="imageData || 'assets/images/cameraplus.png'"
-              alt="Avatar"
-              (click)="fileInput.click()"
-              style="cursor: pointer;" />
+            <img class="avatar-image" [src]="imageData || 'assets/images/cameraplus.png'" alt="Avatar"
+              (click)="fileInput.click()" style="cursor: pointer;" />
           </div>
         </div>
 
-        <input
-          type="file"
-          #fileInput
-          hidden
-          (change)="onImageSelected($event)"
-          accept="image/*" />
+        <input type="file" #fileInput hidden (change)="onImageSelected($event)" accept="image/*" />
 
         <div class="line-main">
-          <input
-            type="text"
-            class="line-content no-focus-border"
-            name="name"
-            [(ngModel)]="name"
-            placeholder="Enter your name"
-            maxlength="25"
-            required
-            (input)="onInputChange($event)" />
+          <input type="text" class="line-content no-focus-border" name="name" [(ngModel)]="name"
+            placeholder="Enter your name" maxlength="25" required (input)="onInputChange($event)" />
 
           <div class="main-emoji">
             <p class="emoji-text">{{ remainingCount }}</p>
@@ -140,21 +124,16 @@
         </div>
         <div class="line"></div>
       </div>
- <div class="main-button">
-  <button
-    class="btn"
-    expand="block"
-    type="submit"
-    [disabled]="!profileForm.form.valid || isSubmitting"
-    (click)="onSubmit()"
-  >
-    <ng-container *ngIf="!isSubmitting">Next</ng-container>
-    <ion-spinner *ngIf="isSubmitting" name="crescent"></ion-spinner>
-  </button>
-</div>
+      <div class="main-button">
+        <button class="btn" expand="block" type="submit" [disabled]="!profileForm.form.valid || isSubmitting"
+          (click)="onSubmit()">
+          <ng-container *ngIf="!isSubmitting">Next</ng-container>
+          <ion-spinner *ngIf="isSubmitting" name="crescent" color="light"></ion-spinner>
+        </button>
+      </div>
 
-      
+
     </form>
-   
+
   </div>
 </ion-content>

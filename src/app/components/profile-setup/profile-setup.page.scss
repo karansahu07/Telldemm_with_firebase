@@ -134,22 +134,29 @@ ion-content {
 .main-button {
   position: fixed;
   display: flex;
-    justify-content: center;
-  bottom: 20px; 
+  justify-content: center;
+  bottom: 20px;
   left: 0;
   width: 100%;
   padding: 0 16px;
   box-sizing: border-box;
   z-index: 10;
-  background: white; 
+  background: white;
 }
 
 .btn {
-    width: 90%;
-    padding: 15px;
-    border-radius: 25px;
-    background: linear-gradient(175deg, rgb(239, 111, 101) 0%, rgb(110, 25, 17) 50%);
-    font-family: Montserrat-bold;
-    font-weight: bold;
-    color: white;
+  width: 90%;
+  height: 50px; 
+  border-radius: 25px;
+  padding: 0 20px;
+  background: linear-gradient(175deg, rgb(239, 111, 101) 0%, rgb(110, 25, 17) 50%);
+  font-family: Montserrat-bold;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  display: flex;               
+  align-items: center;
+  justify-content: center;
+  gap: 10px;                   
+  box-sizing: border-box;
 }
