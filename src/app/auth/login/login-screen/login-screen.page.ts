@@ -1193,38 +1193,72 @@ export class LoginScreenPage {
 
     this.isVerifyingOtp = true;
 
+    // try {
+    //   const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
+    //   console.log('OTP verification response:', res);
+
+    //   if (res.status) {
+    //     this.showToast('Login successful!', 'success');
+    //     localStorage.setItem("phone_number", `${this.countryCode}${this.phoneNumber}`);
+    //     localStorage.setItem("userId", res.user_id.toString());
+    //     // this.router.navigateByUrl('/home-screen');
+    //     //khusha
+    //     // localStorage.setItem("userId", "28");
+    //     const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
+    //     // send your publicKeyHex to server or share with contacts
+    //     console.log('Your public key:', publicKeyHex);
+    //     //on basis of userid save public key user table
+    //     // post https://telldemm-backend.onrender.com/api/users/update-public-key
+    //     // payload 
+    //     //         {
+    //     //   "user_id": 28,
+    //     //   "public_key": "abcd1234ecchexvalue"
+    //     // }
+    //     //khusha
+
+    //     this.router.navigateByUrl('/profile-setup');
+    //   } else {
+    //     this.showToast(res.message || 'Invalid OTP. Try again.');
+    //   }
+    // } catch (err) {
+    //   console.error('OTP verification failed:', err);
+    //   this.showToast('Failed to verify OTP. Try again.', 'danger');
+    // } finally {
+    //   this.isVerifyingOtp = false;
+    // }
+
     try {
-      const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
-      console.log('OTP verification response:', res);
+  const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
+  console.log('OTP verification response:', res);
 
-      if (res.status) {
-        this.showToast('Login successful!', 'success');
-        localStorage.setItem("phone_number", `${this.countryCode}${this.phoneNumber}`);
-        localStorage.setItem("userId", res.user_id.toString());
-        // this.router.navigateByUrl('/home-screen');
-        //khusha
-        // localStorage.setItem("userId", "28");
-        const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
-        // send your publicKeyHex to server or share with contacts
-        console.log('Your public key:', publicKeyHex);
-        //on basis of userid save public key user table
-        // post https://telldemm-backend.onrender.com/api/users/update-public-key
-        // payload 
-        //         {
-        //   "user_id": 28,
-        //   "public_key": "abcd1234ecchexvalue"
-        // }
-        //khusha
+  if (res.status) {
+    this.showToast('Login successful!', 'success');
 
-        this.router.navigateByUrl('/profile-setup');
-      } else {
-        this.showToast(res.message || 'Invalid OTP. Try again.');
-      }
-    } catch (err) {
-      console.error('OTP verification failed:', err);
-      this.showToast('Failed to verify OTP. Try again.', 'danger');
-    } finally {
-      this.isVerifyingOtp = false;
-    }
+    const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+    localStorage.setItem("phone_number", fullPhone);
+    localStorage.setItem("userId", res.user_id.toString());
+
+    // ✅ Generate ECC keys
+    const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
+    console.log('Your public key:', publicKeyHex);
+
+    // ✅ Post public key to the server
+    await this.api.post('/api/users/update-public-key', {
+      user_id: res.user_id,
+      public_key: publicKeyHex
+    }).toPromise();
+
+    // ✅ Navigate to profile setup
+    this.router.navigateByUrl('/profile-setup');
+  } else {
+    this.showToast(res.message || 'Invalid OTP. Try again.');
+  }
+} catch (err) {
+  console.error('OTP verification failed:', err);
+  this.showToast('Failed to verify OTP. Try again.', 'danger');
+} finally {
+  this.isVerifyingOtp = false;
+}
+
   }
 }

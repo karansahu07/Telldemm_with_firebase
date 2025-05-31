@@ -22,6 +22,7 @@ export class ProfileSetupPage implements OnInit {
   inputText = '';
   remainingCount = this.maxLength;
   isSubmitting: boolean = false;
+  userID: string = '';
 
   constructor(
     private toastController: ToastController,
@@ -30,9 +31,9 @@ export class ProfileSetupPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    const storedPhone = localStorage.getItem('phone_number');
+    const storedPhone = localStorage.getItem('userId');
     if (storedPhone) {
-      this.phoneNumber = storedPhone;
+      this.userID = storedPhone;
     } else {
       this.showToast('Phone number is missing, please login again.', 'danger');
       this.router.navigateByUrl('/login-screen');
@@ -74,7 +75,7 @@ export class ProfileSetupPage implements OnInit {
   this.isSubmitting = true; 
 
   const payload = {
-    phone_number: this.phoneNumber,
+    user_id: this.userID,
     name: this.name,
     profile_picture: this.imageData ? this.imageData.toString() : null,
   };

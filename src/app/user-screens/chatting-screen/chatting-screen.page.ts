@@ -168,11 +168,12 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.senderId = localStorage.getItem('userId') || '';
     // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
-    //  this.receiverPhoneNumber = this.route.snapshot.paramMap.get('receiverId') || '';
+    // this.receiverPhoneNumber = this.route.snapshot.paramMap.get('receiverId') || '';
      this.receiverPhoneNumber = '+919138152160';//----khusha-----------from getting url append +91 or + as created problem while getting with + 
 
     console.log('Sender:', this.senderId);
     console.log('Receiver:', this.receiverId);
+    // console.log('Phone:', this.receiverPhoneNumber);
     this.loadFromLocalStorage();
 
     // this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
@@ -217,7 +218,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   userID:String="";
   lastMessageResponse:String="";
 async sendMessage() {
-  this.userID = "28";
+   this.userID = "28";
   // Step 1: Get receiver's public key using ApiService
   if (!this.receiverPublicKeyHex) {
     const response = await firstValueFrom(
