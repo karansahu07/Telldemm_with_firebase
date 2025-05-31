@@ -165,7 +165,7 @@ export class EncryptionService {
     return buffer.buffer;
   }
 
-
+//wip
 /** Decrypt message with AES-CBC */
 async decryptMessageAES(
   encryptedHex: string,
@@ -193,19 +193,33 @@ async decryptMessageAES(
 }
 
 /** Decrypt an incoming message */
-async decryptMessage(
-  encryptedHex: string,
-  ivHex: string,
-  senderPublicKeyHex: string
-): Promise<string> {
-  try {
-    // Derive AES key using sender's public key and receiver's private key
-    const aesKey = await this.deriveAESKey(senderPublicKeyHex);
+// async decryptMessage(
+//   encryptedHex: string,
+//   ivHex: string,
+//   senderPublicKeyHex: string
+// ): Promise<string> {
+//   try {
+//     // Derive AES key using sender's public key and receiver's private key
+//     const aesKey = await this.deriveAESKey(senderPublicKeyHex);
 
-    // Decrypt the message
+//     // Decrypt the message
+//     return await this.decryptMessageAES(encryptedHex, ivHex, aesKey);
+//   } catch (error) {
+//     console.error('Decrypt Message Error:', error);
+//     throw new Error('Failed to decrypt message');
+//   }
+// }
+
+
+async decryptMessage(encryptedHex: string, ivHex: string, senderPublicKeyHex: string): Promise<string> {
+  try {
+    if (!encryptedHex || !ivHex || !senderPublicKeyHex) {
+      throw new Error('Missing required parameters for decryption');
+    }
+    const aesKey = await this.deriveAESKey(senderPublicKeyHex);
     return await this.decryptMessageAES(encryptedHex, ivHex, aesKey);
   } catch (error) {
-    console.error('Decrypt Message Error:', error);
+    console.error('Error decrypting message:', error);
     throw new Error('Failed to decrypt message');
   }
 }

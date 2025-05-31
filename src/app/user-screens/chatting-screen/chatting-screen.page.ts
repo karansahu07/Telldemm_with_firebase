@@ -256,7 +256,44 @@ async sendMessage() {
  try {
   const result = await this.socketService.emitMessage(payload);
   console.log('Message sent, server returned:', result);
+
+//   {
+//     "status": "success",
+//     "message": "Message stored and delivered",
+//     "data": {
+//         "messageId": 21,
+// senderId
+// : 
+// 28
+
+//         "timestamp": "2025-05-31T04:58:00.776Z",
+//         "encryptedMessage": {
+//             "iv": "2298a79cec001adf5b3eec420054508c",
+//             "encryptedText": "a79e81e679bd76a66983bc09f2c62c09"
+//         }
+//     }
+// }
+  //decrypt above payload
   this.lastMessageResponse = result;
+          const encryptedMessage = result.data ? result.data.encryptedMessage : result.encryptedMessage;
+          const encryptedHex = encryptedMessage.encryptedText;
+          const ivHex = encryptedMessage.iv;
+
+          const response = await firstValueFrom(
+            this.apiService.get<{ publicKeyHex: string }>(
+              `/api/users/profile?user_id=${result.data.senderId}`
+            )
+          );
+
+          const senderPublicKeyHex = response.publicKeyHex;
+
+  this.messageText = await this.encryptionService.decryptMessage(
+  encryptedHex,
+  ivHex,
+  senderPublicKeyHex
+);
+
+console.log("Decrypted message", this.messageText);
 } catch (err) {
   console.error('Failed to send message:', err);
 }
