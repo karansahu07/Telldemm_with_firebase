@@ -996,13 +996,282 @@
 
 
 
+// import { Component, ViewChildren, ElementRef, QueryList } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { IonicModule, ToastController } from '@ionic/angular';
+// import { Router } from '@angular/router';
+// import { ApiService } from 'src/app/services/api/api.service';
+// import { EncryptionService } from 'src/app/services/encryption.service';
+
+// @Component({
+//   selector: 'app-login-screen',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule, IonicModule],
+//   templateUrl: './login-screen.page.html',
+//   styleUrls: ['./login-screen.page.scss'],
+// })
+// export class LoginScreenPage {
+//   phoneNumber = '';
+//   countryCode = '+91';
+//   showOtpPopup = false;
+//   showConfirmPopup = false;
+//   otp: string[] = Array(6).fill('');
+//   timer: number = 60;
+//   timerInterval: any;
+
+//   countries = [
+//     { name: 'India', code: '+91' }, { name: 'USA', code: '+1' },
+//     { name: 'UK', code: '+44' }, { name: 'Australia', code: '+61' },
+//     { name: 'Canada', code: '+1' }, { name: 'Germany', code: '+49' },
+//     { name: 'France', code: '+33' }, { name: 'Brazil', code: '+55' },
+//     { name: 'South Africa', code: '+27' }, { name: 'Russia', code: '+7' },
+//     { name: 'China', code: '+86' }, { name: 'Japan', code: '+81' },
+//     { name: 'Singapore', code: '+65' }, { name: 'UAE', code: '+971' },
+//     { name: 'New Zealand', code: '+64' }, { name: 'Mexico', code: '+52' },
+//     { name: 'Italy', code: '+39' }, { name: 'Spain', code: '+34' },
+//     { name: 'Netherlands', code: '+31' }, { name: 'Sweden', code: '+46' }
+//   ];
+
+//   @ViewChildren('otp0, otp1, otp2, otp3, otp4, otp5') otpInputs!: QueryList<ElementRef>;
+//   isLoading: boolean = false;
+//   isSendingOtp: boolean = false;
+//   isVerifyingOtp: boolean = false;
+
+//   constructor(
+//     private api: ApiService,
+//     private router: Router,
+//     private toastController: ToastController,
+//     private encryptionService: EncryptionService
+//   ) { }
+
+//   // Utility to show toast messages
+//   async showToast(message: string, color: 'danger' | 'success' | 'dark' = 'dark') {
+//     const toast = await this.toastController.create({
+//       message,
+//       duration: 2000,
+//       color,
+//     });
+//     toast.present();
+//   }
+
+//   // Allow only numeric input
+//   allowOnlyNumbers(event: KeyboardEvent) {
+//     if (!/^\d$/.test(event.key)) event.preventDefault();
+//   }
+
+//   // Phone number validation
+//   isPhoneValid(): boolean {
+//     return /^\d{10}$/.test(this.phoneNumber.trim());
+//   }
+
+//   // Check if all OTP fields are filled
+//   isOtpComplete(): boolean {
+//     return this.otp.every(d => d.trim().length === 1);
+//   }
+
+//   // Format timer for display
+//   getFormattedTime(): string {
+//     const minutes = Math.floor(this.timer / 60);
+//     const seconds = this.timer % 60;
+//     return `${('0' + minutes).slice(-2)} : ${('0' + seconds).slice(-2)}`;
+//   }
+
+//   // Start countdown for OTP resend
+//   startTimer() {
+//     this.timer = 60;
+//     clearInterval(this.timerInterval);
+//     this.timerInterval = setInterval(() => {
+//       if (this.timer > 0) {
+//         this.timer--;
+//       } else {
+//         clearInterval(this.timerInterval);
+//       }
+//     }, 1000);
+//   }
+
+//   // Trigger resend OTP if allowed
+//   resendOtp() {
+//     if (this.timer === 0) {
+//       this.sendOtp();
+//     }
+//   }
+
+//   // Handle country code change from dropdown
+//   onCountryChange(event: any) {
+//     const selected = this.countries.find(c => c.name === event.target.value);
+//     if (selected) {
+//       this.countryCode = selected.code;
+//     }
+//   }
+
+//   // Called when user clicks "Agree & Continue"
+//   onAgreeClick() {
+//     this.phoneNumber = this.phoneNumber.trim();
+//     if (!this.isPhoneValid()) {
+//       this.showToast('Please enter a valid 10-digit mobile number.', 'danger');
+//       return;
+//     }
+//     this.showConfirmPopup = true;
+//   }
+
+//   // User edits phone number
+//   onEdit() {
+//     this.showConfirmPopup = false;
+//   }
+
+//   // User confirms phone number, OTP is sent
+//   // async onConfirm() {
+//   //   this.showConfirmPopup = false;
+//   //   await this.sendOtp();
+//   // }
+
+//   async onConfirm() {
+//     this.showConfirmPopup = false;
+//     this.isSendingOtp = true;  // Start loader
+//     await this.sendOtp();      // Call OTP send
+//     this.isSendingOtp = false; // Stop loader when done
+//   }
+
+//   // Send OTP to the entered number
+//   async sendOtp() {
+//     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+//     const payload = { phone_number: fullPhone };
+
+//     try {
+//       const res: any = await this.api.post('/api/auth/send-otp', payload).toPromise();
+//       console.log('OTP sent response:', res);
+
+//       if (res.status) {
+//         this.showOtpPopup = true;
+//         this.startTimer();
+//       } else {
+//         this.showToast(res.message || 'Failed to send OTP.');
+//       }
+//     } catch (err) {
+//       console.error('Error sending OTP:', err);
+//       this.showToast('Failed to send OTP. Try again.', 'danger');
+//     }
+//   }
+
+//   // Handle OTP input logic
+//   onOtpInput(event: any, index: number) {
+//     const input = event.target.value;
+//     if (!/^\d$/.test(input)) {
+//       this.otp[index] = '';
+//       event.target.value = '';
+//       return;
+//     }
+
+//     this.otp[index] = input;
+//     if (input && index < this.otp.length - 1) {
+//       this.otpInputs.get(index + 1)?.nativeElement.focus();
+//     }
+//   }
+
+//   // Handle backspace on OTP input
+//   handleBackspace(event: KeyboardEvent, index: number) {
+//     if (event.key === 'Backspace') {
+//       if (!this.otp[index] && index > 0) {
+//         this.otpInputs.get(index - 1)?.nativeElement.focus();
+//       }
+//       this.otp[index] = '';
+//     }
+//   }
+
+//   // Final verification step: Verify OTP and login
+//   async goToHome() {
+//     if (!this.isOtpComplete()) {
+//       this.showToast('Please enter the complete 6-digit OTP.');
+//       return;
+//     }
+
+//     this.isLoading = true; // Start loading
+//     const otpCode = this.otp.join('');
+//     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+//     const payload = { phone_number: fullPhone, otp_code: otpCode };
+
+//     this.isVerifyingOtp = true;
+
+//     // try {
+//     //   const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
+//     //   console.log('OTP verification response:', res);
+
+//     //   if (res.status) {
+//     //     this.showToast('Login successful!', 'success');
+//     //     localStorage.setItem("phone_number", `${this.countryCode}${this.phoneNumber}`);
+//     //     localStorage.setItem("userId", res.user_id.toString());
+//     //     // this.router.navigateByUrl('/home-screen');
+//     //     //khusha
+//     //     // localStorage.setItem("userId", "28");
+//     //     const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
+//     //     // send your publicKeyHex to server or share with contacts
+//     //     console.log('Your public key:', publicKeyHex);
+//     //     //on basis of userid save public key user table
+//     //     // post https://telldemm-backend.onrender.com/api/users/update-public-key
+//     //     // payload 
+//     //     //         {
+//     //     //   "user_id": 28,
+//     //     //   "public_key": "abcd1234ecchexvalue"
+//     //     // }
+//     //     //khusha
+
+//     //     this.router.navigateByUrl('/profile-setup');
+//     //   } else {
+//     //     this.showToast(res.message || 'Invalid OTP. Try again.');
+//     //   }
+//     // } catch (err) {
+//     //   console.error('OTP verification failed:', err);
+//     //   this.showToast('Failed to verify OTP. Try again.', 'danger');
+//     // } finally {
+//     //   this.isVerifyingOtp = false;
+//     // }
+
+//     try {
+//   const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
+//   console.log('OTP verification response:', res);
+
+//   if (res.status) {
+//     this.showToast('Login successful!', 'success');
+
+//     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+//     localStorage.setItem("phone_number", fullPhone);
+//     localStorage.setItem("userId", res.user_id.toString());
+//     localStorage.setItem("loggedIn", "true");
+
+//     // ✅ Generate ECC keys
+//     const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
+//     console.log('Your public key:', publicKeyHex);
+
+//     // ✅ Post public key to the server
+//     await this.api.post('/api/users/update-public-key', {
+//       user_id: res.user_id,
+//       public_key: publicKeyHex
+//     }).toPromise();
+
+//     // ✅ Navigate to profile setup
+//     this.router.navigateByUrl('/profile-setup');
+//   } else {
+//     this.showToast(res.message || 'Invalid OTP. Try again.');
+//   }
+// } catch (err) {
+//   console.error('OTP verification failed:', err);
+//   this.showToast('Failed to verify OTP. Try again.', 'danger');
+// } finally {
+//   this.isVerifyingOtp = false;
+// }
+
+//   }
+// }
+
+
+
 import { Component, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { ApiService } from 'src/app/services/api/api.service';
-import { EncryptionService } from 'src/app/services/encryption.service';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-login-screen',
@@ -1039,73 +1308,54 @@ export class LoginScreenPage {
   isVerifyingOtp: boolean = false;
 
   constructor(
-    private api: ApiService,
+    private authService: AuthService,
     private router: Router,
-    private toastController: ToastController,
-    private encryptionService: EncryptionService
+    private toastController: ToastController
   ) { }
 
-  // Utility to show toast messages
   async showToast(message: string, color: 'danger' | 'success' | 'dark' = 'dark') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color,
-    });
+    const toast = await this.toastController.create({ message, duration: 2000, color });
     toast.present();
   }
 
-  // Allow only numeric input
   allowOnlyNumbers(event: KeyboardEvent) {
     if (!/^\d$/.test(event.key)) event.preventDefault();
   }
 
-  // Phone number validation
   isPhoneValid(): boolean {
     return /^\d{10}$/.test(this.phoneNumber.trim());
   }
 
-  // Check if all OTP fields are filled
   isOtpComplete(): boolean {
     return this.otp.every(d => d.trim().length === 1);
   }
 
-  // Format timer for display
   getFormattedTime(): string {
     const minutes = Math.floor(this.timer / 60);
     const seconds = this.timer % 60;
     return `${('0' + minutes).slice(-2)} : ${('0' + seconds).slice(-2)}`;
   }
 
-  // Start countdown for OTP resend
   startTimer() {
     this.timer = 60;
     clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
-      if (this.timer > 0) {
-        this.timer--;
-      } else {
-        clearInterval(this.timerInterval);
-      }
+      if (this.timer > 0) this.timer--;
+      else clearInterval(this.timerInterval);
     }, 1000);
   }
 
-  // Trigger resend OTP if allowed
   resendOtp() {
     if (this.timer === 0) {
       this.sendOtp();
     }
   }
 
-  // Handle country code change from dropdown
   onCountryChange(event: any) {
     const selected = this.countries.find(c => c.name === event.target.value);
-    if (selected) {
-      this.countryCode = selected.code;
-    }
+    if (selected) this.countryCode = selected.code;
   }
 
-  // Called when user clicks "Agree & Continue"
   onAgreeClick() {
     this.phoneNumber = this.phoneNumber.trim();
     if (!this.isPhoneValid()) {
@@ -1115,33 +1365,21 @@ export class LoginScreenPage {
     this.showConfirmPopup = true;
   }
 
-  // User edits phone number
   onEdit() {
     this.showConfirmPopup = false;
   }
 
-  // User confirms phone number, OTP is sent
-  // async onConfirm() {
-  //   this.showConfirmPopup = false;
-  //   await this.sendOtp();
-  // }
-
   async onConfirm() {
     this.showConfirmPopup = false;
-    this.isSendingOtp = true;  // Start loader
-    await this.sendOtp();      // Call OTP send
-    this.isSendingOtp = false; // Stop loader when done
+    this.isSendingOtp = true;
+    await this.sendOtp();
+    this.isSendingOtp = false;
   }
 
-  // Send OTP to the entered number
   async sendOtp() {
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
-    const payload = { phone_number: fullPhone };
-
     try {
-      const res: any = await this.api.post('/api/auth/send-otp', payload).toPromise();
-      console.log('OTP sent response:', res);
-
+      const res = await this.authService.sendOtp(fullPhone);
       if (res.status) {
         this.showOtpPopup = true;
         this.startTimer();
@@ -1149,12 +1387,10 @@ export class LoginScreenPage {
         this.showToast(res.message || 'Failed to send OTP.');
       }
     } catch (err) {
-      console.error('Error sending OTP:', err);
       this.showToast('Failed to send OTP. Try again.', 'danger');
     }
   }
 
-  // Handle OTP input logic
   onOtpInput(event: any, index: number) {
     const input = event.target.value;
     if (!/^\d$/.test(input)) {
@@ -1169,7 +1405,6 @@ export class LoginScreenPage {
     }
   }
 
-  // Handle backspace on OTP input
   handleBackspace(event: KeyboardEvent, index: number) {
     if (event.key === 'Backspace') {
       if (!this.otp[index] && index > 0) {
@@ -1179,86 +1414,24 @@ export class LoginScreenPage {
     }
   }
 
-  // Final verification step: Verify OTP and login
   async goToHome() {
     if (!this.isOtpComplete()) {
       this.showToast('Please enter the complete 6-digit OTP.');
       return;
     }
 
-    this.isLoading = true; // Start loading
-    const otpCode = this.otp.join('');
-    const fullPhone = `${this.countryCode}${this.phoneNumber}`;
-    const payload = { phone_number: fullPhone, otp_code: otpCode };
-
     this.isVerifyingOtp = true;
-
-    // try {
-    //   const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
-    //   console.log('OTP verification response:', res);
-
-    //   if (res.status) {
-    //     this.showToast('Login successful!', 'success');
-    //     localStorage.setItem("phone_number", `${this.countryCode}${this.phoneNumber}`);
-    //     localStorage.setItem("userId", res.user_id.toString());
-    //     // this.router.navigateByUrl('/home-screen');
-    //     //khusha
-    //     // localStorage.setItem("userId", "28");
-    //     const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
-    //     // send your publicKeyHex to server or share with contacts
-    //     console.log('Your public key:', publicKeyHex);
-    //     //on basis of userid save public key user table
-    //     // post https://telldemm-backend.onrender.com/api/users/update-public-key
-    //     // payload 
-    //     //         {
-    //     //   "user_id": 28,
-    //     //   "public_key": "abcd1234ecchexvalue"
-    //     // }
-    //     //khusha
-
-    //     this.router.navigateByUrl('/profile-setup');
-    //   } else {
-    //     this.showToast(res.message || 'Invalid OTP. Try again.');
-    //   }
-    // } catch (err) {
-    //   console.error('OTP verification failed:', err);
-    //   this.showToast('Failed to verify OTP. Try again.', 'danger');
-    // } finally {
-    //   this.isVerifyingOtp = false;
-    // }
-
-    try {
-  const res: any = await this.api.post('/api/auth/verify-otp', payload).toPromise();
-  console.log('OTP verification response:', res);
-
-  if (res.status) {
-    this.showToast('Login successful!', 'success');
-
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
-    localStorage.setItem("phone_number", fullPhone);
-    localStorage.setItem("userId", res.user_id.toString());
+    const otpCode = this.otp.join('');
 
-    // ✅ Generate ECC keys
-    const publicKeyHex = await this.encryptionService.generateAndStoreECCKeys();
-    console.log('Your public key:', publicKeyHex);
+    const result = await this.authService.verifyOtp(fullPhone, otpCode);
+    this.isVerifyingOtp = false;
 
-    // ✅ Post public key to the server
-    await this.api.post('/api/users/update-public-key', {
-      user_id: res.user_id,
-      public_key: publicKeyHex
-    }).toPromise();
-
-    // ✅ Navigate to profile setup
-    this.router.navigateByUrl('/profile-setup');
-  } else {
-    this.showToast(res.message || 'Invalid OTP. Try again.');
-  }
-} catch (err) {
-  console.error('OTP verification failed:', err);
-  this.showToast('Failed to verify OTP. Try again.', 'danger');
-} finally {
-  this.isVerifyingOtp = false;
-}
-
+    if (result.success) {
+      this.showToast('Login successful!', 'success');
+      this.router.navigateByUrl('/profile-setup');
+    } else {
+      this.showToast(result.message || 'Invalid OTP', 'danger');
+    }
   }
 }
