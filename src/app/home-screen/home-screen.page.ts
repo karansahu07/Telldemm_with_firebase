@@ -287,6 +287,132 @@
 
 
 
+// import { CommonModule } from '@angular/common';
+// import { Component, OnInit, OnDestroy } from '@angular/core';
+// import { IonicModule, PopoverController } from '@ionic/angular';
+// import { FooterTabsComponent } from "../components/footer-tabs/footer-tabs.component";
+// import { Router } from '@angular/router';
+// import { MenuPopoverComponent } from '../components/menu-popover/menu-popover.component';
+// import { FormsModule } from '@angular/forms';
+// import { SocketService } from '../services/socket.service';
+// import { Subscription } from 'rxjs';
+
+// @Component({
+//   selector: 'app-home-screen',
+//   templateUrl: './home-screen.page.html',
+//   styleUrls: ['./home-screen.page.scss'],
+//   standalone: true,
+//   imports: [IonicModule, CommonModule, FooterTabsComponent, FormsModule]
+// })
+// export class HomeScreenPage implements OnInit, OnDestroy {
+
+//   constructor(
+//     private router: Router,
+//     private popoverCtrl: PopoverController,
+//     private socketService: SocketService
+//   ) {}
+
+//   searchText: string = '';
+//   selectedFilter: string = 'all';
+//   currUserId: string | null = localStorage.getItem("phone_number");
+//   private messageSub: Subscription | undefined;
+
+//   chatList = [
+//     { name: 'Alice', phone: '+919138152160', message: 'Hello', messageStatus: 'sent', unread: false, time: '10:00 AM', unreadCount: 0, group: false },
+//     { name: 'Bob', phone: '+919034223457', message: 'How are you?', messageStatus: 'received', unread: true, time: '11:00 AM', unreadCount: 2, group: false },
+//   ];
+
+//   ngOnInit() {
+//     // Remove current user's own number from chat list
+//     this.chatList = this.chatList.filter(chat => chat.phone !== this.currUserId);
+
+//     // Setup message listener
+//     this.listenToMessages();
+//   }
+
+//   ngOnDestroy(): void {
+//     if (this.messageSub) {
+//       this.messageSub.unsubscribe();
+//     }
+//   }
+
+//   listenToMessages() {
+//     this.socketService.onMessageReceived((msg) => {
+//       const { senderId, receiverId, message } = msg;
+
+//       // Only update if current user is the receiver
+//       if (receiverId !== this.currUserId) return;
+
+//       const existingChat = this.chatList.find(c => c.phone === senderId);
+
+//       if (existingChat) {
+//         existingChat.message = message;
+//         existingChat.unread = true;
+//         existingChat.unreadCount += 1;
+//         existingChat.time = new Date().toLocaleTimeString();
+//       } else {
+//         this.chatList.push({
+//           name: senderId, // You can replace this with actual name lookup if available
+//           phone: senderId,
+//           message: message,
+//           messageStatus: 'received',
+//           unread: true,
+//           unreadCount: 1,
+//           time: new Date().toLocaleTimeString(),
+//           group: false
+//         });
+//       }
+//     });
+//   }
+
+//   get filteredChats() {
+//     let filtered = this.chatList;
+
+//     if (this.selectedFilter === 'read') {
+//       filtered = filtered.filter(chat => !chat.unread);
+//     } else if (this.selectedFilter === 'unread') {
+//       filtered = filtered.filter(chat => chat.unread);
+//     } else if (this.selectedFilter === 'groups') {
+//       filtered = filtered.filter(chat => chat.group);
+//     }
+
+//     if (this.searchText.trim() !== '') {
+//       const searchLower = this.searchText.toLowerCase();
+//       filtered = filtered.filter(chat =>
+//         chat.name.toLowerCase().includes(searchLower) ||
+//         chat.message.toLowerCase().includes(searchLower)
+//       );
+//     }
+
+//     return filtered;
+//   }
+
+//   get totalUnreadCount(): number {
+//     return this.chatList.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+//   }
+
+//   setFilter(filter: string) {
+//     this.selectedFilter = filter;
+//   }
+
+//   openChat(chat: any) {
+//     this.router.navigate(['/chatting-screen'], {
+//       queryParams: { receiverId: chat.phone }
+//     });
+//   }
+
+//   async presentPopover(ev: any) {
+//     const popover = await this.popoverCtrl.create({
+//       component: MenuPopoverComponent,
+//       event: ev,
+//       translucent: true,
+//     });
+//     await popover.present();
+//   }
+// }
+
+
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicModule, PopoverController } from '@ionic/angular';
@@ -295,7 +421,7 @@ import { Router } from '@angular/router';
 import { MenuPopoverComponent } from '../components/menu-popover/menu-popover.component';
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../services/socket.service';
-import { Subscription } from 'rxjs';
+import { ApiService } from '../services/api/api.service';
 
 @Component({
   selector: 'app-home-screen',
@@ -309,38 +435,51 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private popoverCtrl: PopoverController,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private apiService: ApiService
   ) {}
 
   searchText: string = '';
   selectedFilter: string = 'all';
-  currUserId: string | null = localStorage.getItem("userId");
-  private messageSub: Subscription | undefined;
+  currUserId: string | null = localStorage.getItem("phone_number");
 
-  chatList = [
-    { name: 'Alice', phone: '9138152160', message: 'Hello', messageStatus: 'sent', unread: false, time: '10:00 AM', unreadCount: 0, group: false },
-    { name: 'Bob', phone: '9034223457', message: 'How are you?', messageStatus: 'received', unread: true, time: '11:00 AM', unreadCount: 2, group: false },
-  ];
+  chatList: any[] = [];
 
   ngOnInit() {
-    // Remove current user's own number from chat list
-    this.chatList = this.chatList.filter(chat => chat.phone !== this.currUserId);
-
-    // Setup message listener
+    this.fetchAllUsers();
     this.listenToMessages();
   }
 
   ngOnDestroy(): void {
-    if (this.messageSub) {
-      this.messageSub.unsubscribe();
-    }
+    // No need to unsubscribe if not using observable subscription
+  }
+
+  fetchAllUsers() {
+    this.apiService.getAllUsers().subscribe({
+      next: (users: any[]) => {
+        this.chatList = users
+          .filter((user: any) => user.phone_number !== this.currUserId)
+          .map((user: any) => ({
+            name: user.name || user.phone_number,
+            phone: user.phone_number,
+            message: 'No messages yet',
+            messageStatus: 'sent',
+            unread: false,
+            time: '',
+            unreadCount: 0,
+            group: false
+          }));
+      },
+      error: (err: any) => {
+        console.error("Failed to fetch users", err);
+      }
+    });
   }
 
   listenToMessages() {
     this.socketService.onMessageReceived((msg) => {
       const { senderId, receiverId, message } = msg;
 
-      // Only update if current user is the receiver
       if (receiverId !== this.currUserId) return;
 
       const existingChat = this.chatList.find(c => c.phone === senderId);
@@ -352,7 +491,7 @@ export class HomeScreenPage implements OnInit, OnDestroy {
         existingChat.time = new Date().toLocaleTimeString();
       } else {
         this.chatList.push({
-          name: senderId, // You can replace this with actual name lookup if available
+          name: senderId,
           phone: senderId,
           message: message,
           messageStatus: 'received',
@@ -410,3 +549,4 @@ export class HomeScreenPage implements OnInit, OnDestroy {
     await popover.present();
   }
 }
+

@@ -94,6 +94,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SocketService {
+  isConnected(): any {
+    throw new Error('Method not implemented.');
+  }
+  // onMessage() {
+  //   throw new Error('Method not implemented.');
+  // }
   private socket: Socket;
   private readonly serverUrl = 'https://telldemm-backend.onrender.com/';
 
@@ -153,14 +159,14 @@ export class SocketService {
   /**
    * Listen for incoming messages broadcasted by backend.
    */
-  // onMessage(): Observable<any> {
-  //   return new Observable(observer => {
-  //     this.socket.on('receive_message', (msg) => {
-  //       console.log('Received message:', msg);
-  //       observer.next(msg);
-  //     });
-  //   });
-  // }
+  onMessage(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('receive_message', (msg) => {
+        console.log('Received message:', msg);
+        observer.next(msg);
+      });
+    });
+  }
 
   // disconnect() {
   //   if (this.socket) {

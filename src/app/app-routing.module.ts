@@ -128,7 +128,7 @@ const routes: Routes = [
   },
   {
     path: 'profile-setup',
-    canActivate: [ AuthGuard],
+    canActivate: [AuthGuard],
     loadComponent: () => import('./components/profile-setup/profile-setup.page').then(m => m.ProfileSetupPage)
   }
 ];

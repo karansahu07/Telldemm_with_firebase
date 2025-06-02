@@ -38,6 +38,9 @@ export class ApiService {
   return this.http.get<T>(`${this.baseUrl}${url}`, { params });
 }
 
+getAllUsers(): Observable<any[]> {
+  return this.get<any[]>('/api/users');
+}
 
   
 

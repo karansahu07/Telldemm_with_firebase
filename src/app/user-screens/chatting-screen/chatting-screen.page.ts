@@ -128,7 +128,248 @@
 
 
 
-import { Component, OnInit, OnDestroy, AfterViewInit, inject, ViewChild, ElementRef } from '@angular/core';
+// import { Component, OnInit, OnDestroy, AfterViewInit, inject, ViewChild, ElementRef } from '@angular/core';
+// import { ActivatedRoute, Router } from '@angular/router';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { IonicModule } from '@ionic/angular';
+// import { SocketService } from '../../services/socket.service';
+// import { firstValueFrom, Subscription } from 'rxjs';
+// import { EncryptionService } from 'src/app/services/encryption.service';
+// import { ApiService } from 'src/app/services/api/api.service';
+
+// @Component({
+//   selector: 'app-chatting-screen',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule, IonicModule],
+//   templateUrl: './chatting-screen.page.html',
+//   styleUrls: ['./chatting-screen.page.scss']
+// })
+// export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
+//   messages: any[] = [];
+//   messageText: string = '';
+//   receiverId: string = '';
+//   senderId: string = '';
+//   receiverPublicKeyHex: string = '';
+//   private messageSub: Subscription | undefined;
+
+//   private socketService = inject(SocketService);
+//   private route = inject(ActivatedRoute);
+//   private router = inject(Router);
+
+//   // receiverPhoneNumber: string = '+919138152160'; // static
+//   receiverPhoneNumber: string = '';
+
+  
+//   constructor(private encryptionService: EncryptionService,private apiService:ApiService) { }
+
+//   @ViewChild('scrollContainer') private scrollContainer: ElementRef | undefined;
+
+//   ngOnInit() {
+//     this.senderId = localStorage.getItem('userId') || '';
+//     // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+//     // this.receiverPhoneNumber = this.route.snapshot.paramMap.get('receiverId') || '';
+
+//     this.route.queryParamMap.subscribe(params => {
+//   this.receiverPhoneNumber = params.get('receiverId') || '';
+// });
+//     // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+//     // console.log(this.receiverId);
+
+// // if (this.receiverId) {
+// //   this.apiService.get<{ phone_number: string }>(`/api/users/profile?user_id=${this.receiverId}`)
+// //     .subscribe({
+// //       next: (res) => {
+// //         this.receiverPhoneNumber = res.phone_number;
+// //         console.log('Receiver phone:', this.receiverPhoneNumber);
+// //       },
+// //       error: (err) => {
+// //         console.error('Failed to fetch receiver phone number', err);
+// //       }
+// //     });
+// // }
+
+//     //  this.receiverPhoneNumber = '+919138152160';//----khusha-----------from getting url append +91 or + as created problem while getting with + 
+
+//     console.log('Sender:', this.senderId);
+//     console.log('receiverPhoneNumber:', this.receiverId);
+//     console.log('Phone:', this.receiverPhoneNumber);
+//     this.loadFromLocalStorage();
+
+//     // this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
+//     //   const isCurrentChat =
+//     //     (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
+//     //     (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
+
+//     //   if (isCurrentChat) {
+//     //     this.messages.push(msg);
+//     //     this.saveToLocalStorage();
+//     //     this.scrollToBottom();
+//     //   }
+//     // });
+//   }
+
+//   ngAfterViewInit(): void {
+//     setTimeout(() => this.scrollToBottom(), 300);
+//   }
+
+//   // sendMessage() {
+//   //   if (!this.messageText.trim()) return;
+
+//   //   const message = {
+//   //     type: 'private',
+//   //     sender_id: this.senderId,
+//   //     receiver_id: this.receiverId,
+//   //     text: this.messageText.trim(),
+//   //     timestamp: new Date().toLocaleTimeString()
+//   //   };
+
+//   //   // Push sent message locally for immediate UI response
+//   //   this.messages.push(message);
+//   //   this.saveToLocalStorage();
+//   //   this.scrollToBottom();
+
+//   //   // Send to server
+//   //   this.socketService.sendMessage(message);
+
+//   //   // Clear input
+//   //   this.messageText = '';
+//   // }
+//   userID:String="";
+//   lastMessageResponse:String="";
+// async sendMessage() {
+//   //  this.userID = "28";
+//   this.userID = localStorage.getItem('userId') || '';
+//   // Step 1: Get receiver's public key using ApiService
+//   if (!this.receiverPublicKeyHex) {
+//     const response = await firstValueFrom(
+//       this.apiService.get<{ publicKeyHex: string }>(
+//         `/api/users/profile?user_id=${this.userID}`
+//       )
+//     );
+//     this.receiverPublicKeyHex = response.publicKeyHex;
+//   }
+
+//   // Step 2: Build encrypted payload
+//   const payload = await this.encryptionService.buildEncryptedPayload(
+//     this.messageText,
+//     this.receiverPhoneNumber,
+//     this.receiverPublicKeyHex
+//   );
+
+//   console.log('Encrypted Payload:', payload);
+
+// //   {
+// //     "senderId": 28,
+// //     "receiverPhoneNumber": "+911234567890",
+// //     "encryptedMessage": {
+// //         "iv": "7f12b085a95dc196290c6ba6a75ed201",
+// //         "encryptedText": "baa377dc851af7627e7c165233aa87df"
+// //     },
+// //     "messageType": "text"
+// // }
+
+//   // Step 3: Send encrypted payload (via WebSocket or HTTP)
+//   // Example:
+//   // this.socketService.emit('sendMessage', payload);
+//   // this.socketService.emitMessage(payload); // <- EMIT METHOD CALLED HERE
+
+//    // Emit with callback to receive response from server
+//  try {
+//   const result = await this.socketService.emitMessage(payload);
+//   console.log('Message sent, server returned:', result);
+
+// //   {
+// //     "status": "success",
+// //     "message": "Message stored and delivered",
+// //     "data": {
+// //         "messageId": 21,
+// // senderId
+// // : 
+// // 28
+
+// //         "timestamp": "2025-05-31T04:58:00.776Z",
+// //         "encryptedMessage": {
+// //             "iv": "2298a79cec001adf5b3eec420054508c",
+// //             "encryptedText": "a79e81e679bd76a66983bc09f2c62c09"
+// //         }
+// //     }
+// // }
+//   //decrypt above payload
+//   this.lastMessageResponse = result;
+//           const encryptedMessage = result.data ? result.data.encryptedMessage : result.encryptedMessage;
+//           const encryptedHex = encryptedMessage.encryptedText;
+//           const ivHex = encryptedMessage.iv;
+
+//           const response = await firstValueFrom(
+//             this.apiService.get<{ publicKeyHex: string }>(
+//               `/api/users/profile?user_id=${result.data.senderId}`
+//             )
+//           );
+
+//           const senderPublicKeyHex = response.publicKeyHex;
+
+//   this.messageText = await this.encryptionService.decryptMessage(
+//   encryptedHex,
+//   ivHex,
+//   senderPublicKeyHex
+// );
+
+// console.log("Decrypted message", this.messageText);
+// } catch (err) {
+//   console.error('Failed to send message:', err);
+// }
+
+ 
+
+// }
+
+
+
+
+
+
+
+//   saveToLocalStorage() {
+//     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
+//   }
+
+//   loadFromLocalStorage() {
+//     this.messages = JSON.parse(localStorage.getItem(this.receiverId) || '[]');
+//   }
+
+//   scrollToBottom() {
+//     try {
+//       setTimeout(() => {
+//         if (this.scrollContainer) {
+//           this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+//         }
+//       }, 100);
+//     } catch (err) {
+//       console.warn('Scroll error:', err);
+//     }
+//   }
+
+//   goToCallingScreen() {
+//     this.router.navigate(['/calling-screen']);
+//   }
+
+//   ngOnDestroy(): void {
+//     this.messageSub?.unsubscribe();
+//   }
+// }
+
+
+
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  inject,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -143,7 +384,7 @@ import { ApiService } from 'src/app/services/api/api.service';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule],
   templateUrl: './chatting-screen.page.html',
-  styleUrls: ['./chatting-screen.page.scss']
+  styleUrls: ['./chatting-screen.page.scss'],
 })
 export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   messages: any[] = [];
@@ -157,179 +398,171 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  // receiverPhoneNumber: string = '+919138152160'; // static
-  receiverPhoneNumber: string = ''; // static
+  receiverPhoneNumber: string = '';
 
-  
-  constructor(private encryptionService: EncryptionService,private apiService:ApiService) { }
+  constructor(
+    private encryptionService: EncryptionService,
+    private apiService: ApiService
+  ) {}
 
-  @ViewChild('scrollContainer') private scrollContainer: ElementRef | undefined;
+  @ViewChild('scrollContainer') private scrollContainer:
+    | ElementRef
+    | undefined;
 
   ngOnInit() {
     this.senderId = localStorage.getItem('userId') || '';
-    // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
-    // this.receiverPhoneNumber = this.route.snapshot.paramMap.get('receiverId') || '';
-     this.receiverPhoneNumber = '+919138152160';//----khusha-----------from getting url append +91 or + as created problem while getting with + 
+
+    this.route.queryParamMap.subscribe((params) => {
+      this.receiverPhoneNumber = params.get('receiverId') || '';
+      this.receiverId = this.receiverPhoneNumber;
+    });
 
     console.log('Sender:', this.senderId);
-    console.log('Receiver:', this.receiverId);
-    // console.log('Phone:', this.receiverPhoneNumber);
+    console.log('receiverPhoneNumber:', this.receiverId);
+    console.log('Phone:', this.receiverPhoneNumber);
+
     this.loadFromLocalStorage();
 
-    // this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
-    //   const isCurrentChat =
-    //     (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
-    //     (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
+    this.messageSub = this.socketService.onMessage().subscribe(async (msg: any) => {
+      const isCurrentChat =
+        (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
+        (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
 
-    //   if (isCurrentChat) {
-    //     this.messages.push(msg);
-    //     this.saveToLocalStorage();
-    //     this.scrollToBottom();
-    //   }
-    // });
+      if (isCurrentChat && msg.encryptedMessage) {
+        const encryptedHex = msg.encryptedMessage.encryptedText;
+        const ivHex = msg.encryptedMessage.iv;
+
+        // Get sender's public key
+        const response = await firstValueFrom(
+          this.apiService.get<{ publicKeyHex: string }>(
+            `/api/users/profile?user_id=${msg.sender_id}`
+          )
+        );
+
+        const senderPublicKeyHex = response.publicKeyHex;
+        const receiverPrivateKeyHex = localStorage.getItem('ecc_private_key');
+
+        if (!receiverPrivateKeyHex) {
+          console.error('Receiver private key not found');
+          return;
+        }
+
+        const decryptedText = await this.encryptionService.decryptMessage(
+          encryptedHex,
+          ivHex,
+          senderPublicKeyHex,
+          receiverPrivateKeyHex
+        );
+
+        this.messages.push({
+          ...msg,
+          text: decryptedText,
+        });
+
+        this.saveToLocalStorage();
+        this.scrollToBottom();
+      }
+    });
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => this.scrollToBottom(), 300);
   }
 
-  // sendMessage() {
-  //   if (!this.messageText.trim()) return;
+  userID: string = '';
+  lastMessageResponse: string = '';
 
-  //   const message = {
-  //     type: 'private',
-  //     sender_id: this.senderId,
-  //     receiver_id: this.receiverId,
-  //     text: this.messageText.trim(),
-  //     timestamp: new Date().toLocaleTimeString()
-  //   };
+  async sendMessage() {
+    this.userID = localStorage.getItem('userId') || '';
 
-  //   // Push sent message locally for immediate UI response
-  //   this.messages.push(message);
-  //   this.saveToLocalStorage();
-  //   this.scrollToBottom();
+    if (!this.receiverPublicKeyHex) {
+      const response = await firstValueFrom(
+        this.apiService.get<{ publicKeyHex: string }>(
+          `/api/users/profile?user_id=${this.userID}`
+        )
+      );
+      this.receiverPublicKeyHex = response.publicKeyHex;
+    }
 
-  //   // Send to server
-  //   this.socketService.sendMessage(message);
-
-  //   // Clear input
-  //   this.messageText = '';
-  // }
-  userID:String="";
-  lastMessageResponse:String="";
-async sendMessage() {
-   this.userID = "28";
-  // Step 1: Get receiver's public key using ApiService
-  if (!this.receiverPublicKeyHex) {
-    const response = await firstValueFrom(
-      this.apiService.get<{ publicKeyHex: string }>(
-        `/api/users/profile?user_id=${this.userID}`
-      )
+    const payload = await this.encryptionService.buildEncryptedPayload(
+      this.messageText,
+      this.receiverPhoneNumber,
+      this.receiverPublicKeyHex
     );
-    this.receiverPublicKeyHex = response.publicKeyHex;
-  }
 
-  // Step 2: Build encrypted payload
-  const payload = await this.encryptionService.buildEncryptedPayload(
-    this.messageText,
-    this.receiverPhoneNumber,
-    this.receiverPublicKeyHex
-  );
+    console.log('Encrypted Payload:', payload);
 
-  console.log('Encrypted Payload:', payload);
+    try {
+      const result = await this.socketService.emitMessage(payload);
+      console.log('Message sent, server returned:', result);
 
-//   {
-//     "senderId": 28,
-//     "receiverPhoneNumber": "+911234567890",
-//     "encryptedMessage": {
-//         "iv": "7f12b085a95dc196290c6ba6a75ed201",
-//         "encryptedText": "baa377dc851af7627e7c165233aa87df"
-//     },
-//     "messageType": "text"
-// }
+      const encryptedMessage = result.data?.encryptedMessage || result.encryptedMessage;
+      const encryptedHex = encryptedMessage.encryptedText;
+      const ivHex = encryptedMessage.iv;
 
-  // Step 3: Send encrypted payload (via WebSocket or HTTP)
-  // Example:
-  // this.socketService.emit('sendMessage', payload);
-  // this.socketService.emitMessage(payload); // <- EMIT METHOD CALLED HERE
+      const response = await firstValueFrom(
+        this.apiService.get<{ publicKeyHex: string }>(
+          `/api/users/profile?user_id=${result.data.senderId}`
+        )
+      );
 
-   // Emit with callback to receive response from server
- try {
-  const result = await this.socketService.emitMessage(payload);
-  console.log('Message sent, server returned:', result);
+      const senderPublicKeyHex = response.publicKeyHex;
+      const receiverPrivateKeyHex = localStorage.getItem('ecc_private_key');
 
-//   {
-//     "status": "success",
-//     "message": "Message stored and delivered",
-//     "data": {
-//         "messageId": 21,
-// senderId
-// : 
-// 28
+      if (!receiverPrivateKeyHex) {
+        console.error('Receiver private key not found');
+        return;
+      }
 
-//         "timestamp": "2025-05-31T04:58:00.776Z",
-//         "encryptedMessage": {
-//             "iv": "2298a79cec001adf5b3eec420054508c",
-//             "encryptedText": "a79e81e679bd76a66983bc09f2c62c09"
-//         }
-//     }
-// }
-  //decrypt above payload
-  this.lastMessageResponse = result;
-          const encryptedMessage = result.data ? result.data.encryptedMessage : result.encryptedMessage;
-          const encryptedHex = encryptedMessage.encryptedText;
-          const ivHex = encryptedMessage.iv;
+      const decryptedText = await this.encryptionService.decryptMessage(
+        encryptedHex,
+        ivHex,
+        senderPublicKeyHex,
+        receiverPrivateKeyHex  //this will not found
+      );
 
-          const response = await firstValueFrom(
-            this.apiService.get<{ publicKeyHex: string }>(
-              `/api/users/profile?user_id=${result.data.senderId}`
-            )
-          );
+      console.log('Decrypted message:', decryptedText);
 
-          const senderPublicKeyHex = response.publicKeyHex;
+      this.messages.push({
+        ...result.data,
+        text: decryptedText,
+      });
 
-  this.messageText = await this.encryptionService.decryptMessage(
-  encryptedHex,
-  ivHex,
-  senderPublicKeyHex
-);
-
-console.log("Decrypted message", this.messageText);
-} catch (err) {
-  console.error('Failed to send message:', err);
-}
-
- 
-
-}
-
-
-
-
-
-
-
-  saveToLocalStorage() {
-    localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
-  }
-
-  loadFromLocalStorage() {
-    this.messages = JSON.parse(localStorage.getItem(this.receiverId) || '[]');
+      this.saveToLocalStorage();
+      this.scrollToBottom();
+      this.messageText = '';
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
   }
 
   scrollToBottom() {
     try {
       setTimeout(() => {
         if (this.scrollContainer) {
-          this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+          this.scrollContainer.nativeElement.scrollTop =
+            this.scrollContainer.nativeElement.scrollHeight;
         }
       }, 100);
     } catch (err) {
-      console.warn('Scroll error:', err);
+      console.error('Scroll error:', err);
     }
   }
 
-  goToCallingScreen() {
+  saveToLocalStorage() {
+    const key = `chat_${this.senderId}_${this.receiverPhoneNumber}`;
+    localStorage.setItem(key, JSON.stringify(this.messages));
+  }
+
+  loadFromLocalStorage() {
+    const key = `chat_${this.senderId}_${this.receiverPhoneNumber}`;
+    const data = localStorage.getItem(key);
+    if (data) {
+      this.messages = JSON.parse(data);
+    }
+  }
+
+    goToCallingScreen() {
     this.router.navigate(['/calling-screen']);
   }
 

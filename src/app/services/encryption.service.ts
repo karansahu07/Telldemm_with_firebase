@@ -211,7 +211,7 @@ async decryptMessageAES(
 // }
 
 
-async decryptMessage(encryptedHex: string, ivHex: string, senderPublicKeyHex: string): Promise<string> {
+async decryptMessage(encryptedHex: string, ivHex: string, senderPublicKeyHex: string, receiverPrivateKeyHex: string): Promise<string> {
   try {
     if (!encryptedHex || !ivHex || !senderPublicKeyHex) {
       throw new Error('Missing required parameters for decryption');
