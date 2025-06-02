@@ -459,6 +459,9 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
           text: decryptedText,
         });
 
+       
+
+
         this.saveToLocalStorage();
         this.scrollToBottom();
       }
@@ -547,6 +550,10 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     } catch (err) {
       console.error('Scroll error:', err);
     }
+
+
+    //  console.log("messages",this.messages);
+    //     console.log("senderID",this.senderId);
   }
 
   saveToLocalStorage() {

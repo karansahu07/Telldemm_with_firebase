@@ -165,7 +165,7 @@ export class SocketService {
         console.log('Received message:', msg);
         observer.next(msg);
       });
-    });
+    }); 
   }
 
   // disconnect() {

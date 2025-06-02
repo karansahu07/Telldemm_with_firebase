@@ -447,7 +447,7 @@
 <ion-content class="chat-background">
   <div #scrollContainer class="chat-messages" style="padding: 0 10px 70px 10px; overflow-y: auto;">
     <div *ngFor="let msg of messages"
-         [ngClass]="{ 'align-end': msg.sender_id === senderId, 'align-start': msg.sender_id !== senderId }"
+         [ngClass]="{ 'align-end': msg.sender_id !== senderId, 'align-start': msg.sender_id === senderId }"
          style="display: flex; flex-direction: column; margin: 5px 0;">
       
       <div class="message-bubble"

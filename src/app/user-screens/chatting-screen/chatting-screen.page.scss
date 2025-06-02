@@ -59,12 +59,24 @@ ion-toolbar {
 
 
 /* Alignment for sender and receiver */
+// .align-end {
+//   align-items: flex-end;
+// }
+
+// .align-start {
+//   align-items: flex-start;
+// }
+
+/* For alignment to the right (sender's messages) */
 .align-end {
-  align-items: flex-end;
+  align-self: flex-end; /* Aligns the message to the end (right side) */
+ 
 }
 
+/* For alignment to the left (receiver's messages) */
 .align-start {
-  align-items: flex-start;
+  align-self: flex-start; /* Aligns the message to the start (left side) */
+ 
 }
 
 /* Message bubble */
