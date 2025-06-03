@@ -12,9 +12,9 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
  
-  post(url: string, payload: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}${url}`, payload);
-  }
+  post<T>(url: string, payload: any): Observable<T> {
+  return this.http.post<T>(`${this.baseUrl}${url}`, payload);
+}
 
   /**
    * Send OTP to user
@@ -32,11 +32,29 @@ export class ApiService {
   verifyOtp(phone_number: string, otp_code: string): Observable<any> {
     return this.post('/verify-otp', { phone_number, otp_code });
   }
-
+  
 
   get<T>(url: string, params?: any): Observable<T> {
   return this.http.get<T>(`${this.baseUrl}${url}`, { params });
 }
+
+/**
+   * Get public key for a user using phone_number (POST)
+   * @param phone_number 
+   */
+//   getUserProfile(phone_number: string): Observable<{ publicKeyHex: string }> {
+//    // console.log(phone_number);
+//   return this.post<{ publicKeyHex: string }>('/api/users/profile', { phone_number });
+// }
+
+getUserProfile(phone_number: string): Observable<{ publicKeyHex: string }> {
+    return this.http.post<{ publicKeyHex: string }>(`${this.baseUrl}/api/users/profile_by_mb`, { phone_number });
+
+  }
+getUserProfilebyId(user_id: string): Observable<{ publicKeyHex: string }> {
+    return this.http.post<{ publicKeyHex: string }>(`${this.baseUrl}/api/users/profile_by_userid`, { user_id });
+
+  }
 
 getAllUsers(): Observable<any[]> {
   return this.get<any[]>('/api/users');

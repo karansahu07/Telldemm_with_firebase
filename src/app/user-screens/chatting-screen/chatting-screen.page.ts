@@ -399,6 +399,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   receiverPhoneNumber: string = '';
+  phone_number: string = '';
 
   constructor(
     private encryptionService: EncryptionService,
@@ -411,7 +412,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.senderId = localStorage.getItem('userId') || '';
-
+    this.phone_number = localStorage.getItem('phone_number') || '';
     this.route.queryParamMap.subscribe((params) => {
       this.receiverPhoneNumber = params.get('receiverId') || '';
       this.receiverId = this.receiverPhoneNumber;
@@ -433,11 +434,9 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
         const ivHex = msg.encryptedMessage.iv;
 
         // Get sender's public key
-        const response = await firstValueFrom(
-          this.apiService.get<{ publicKeyHex: string }>(
-            `/api/users/profile?user_id=${msg.sender_id}`
-          )
-        );
+       const response = await firstValueFrom(
+  this.apiService.getUserProfile(this.phone_number)
+);
 
         const senderPublicKeyHex = response.publicKeyHex;
         const receiverPrivateKeyHex = localStorage.getItem('ecc_private_key');
@@ -477,14 +476,14 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
 
   async sendMessage() {
     this.userID = localStorage.getItem('userId') || '';
-
+    this.phone_number = this.receiverId;
+    // console.log("check",this.phone_number);
     if (!this.receiverPublicKeyHex) {
       const response = await firstValueFrom(
-        this.apiService.get<{ publicKeyHex: string }>(
-          `/api/users/profile?user_id=${this.userID}`
-        )
-      );
+  this.apiService.getUserProfile(this.phone_number)
+);
       this.receiverPublicKeyHex = response.publicKeyHex;
+      // console.log(this.receiverPublicKeyHex);
     }
 
     const payload = await this.encryptionService.buildEncryptedPayload(
@@ -504,10 +503,9 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
       const ivHex = encryptedMessage.iv;
 
       const response = await firstValueFrom(
-        this.apiService.get<{ publicKeyHex: string }>(
-          `/api/users/profile?user_id=${result.data.senderId}`
-        )
-      );
+  this.apiService.getUserProfilebyId(result.data.senderId)
+);
+
 
       const senderPublicKeyHex = response.publicKeyHex;
       const receiverPrivateKeyHex = localStorage.getItem('ecc_private_key');
