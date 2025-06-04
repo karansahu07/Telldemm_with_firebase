@@ -103,7 +103,7 @@ const routes: Routes = [
   },
   {
     path: 'calling-screen',
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     loadChildren: () => import('./user-screens/voice-call/calling-screen/calling-screen.module').then(m => m.CallingScreenPageModule)
   },
   {

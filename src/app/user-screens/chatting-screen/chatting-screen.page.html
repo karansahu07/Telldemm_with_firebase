@@ -447,7 +447,7 @@
 <ion-content class="chat-background">
   <div #scrollContainer class="chat-messages" style="padding: 0 10px 70px 10px; overflow-y: auto;">
     <div *ngFor="let msg of messages"
-         [ngClass]="{ 'align-end': msg.sender_id !== senderId, 'align-start': msg.sender_id === senderId }"
+         [ngClass]="{ 'align-end': msg.sender_id === senderId, 'align-start': msg.sender_id !== senderId }"
          style="display: flex; flex-direction: column; margin: 5px 0;">
       
       <div class="message-bubble"
@@ -493,3 +493,24 @@
     </ion-col>
   </ion-row>
 </div>
+
+
+<!-- <ion-header translucent>
+  <ion-toolbar color="primary">
+    <ion-title>Secure Chat</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="chat-container" #chatContainer>
+    <div *ngFor="let msg of messages" [class.me]="msg.sender === 'me'" [class.them]="msg.sender === 'them'">
+      {{ msg.text }}
+    </div>
+  </div>
+
+  <div class="message-input">
+    <ion-input [(ngModel)]="newMessage" placeholder="Type a message..."></ion-input>
+    <ion-button (click)="sendMessage()">Send</ion-button>
+  </div>
+</ion-content> -->
+

@@ -5,7 +5,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class EncryptionService {
-  private readonly STORAGE_PRIVATE_KEY = 'ecc_private_key';
+  private readonly STORAGE_PRIVATE_KEY = localStorage.getItem('ecc_private_key');
+   privateKeyBuffer : any = '';
 
   constructor() {}
 
@@ -23,6 +24,7 @@ export class EncryptionService {
     // Export and store private key (PKCS8 format)
     const privateKeyBuffer = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
     const privateKeyBase64 = this.arrayBufferToBase64(privateKeyBuffer);
+    if(this.STORAGE_PRIVATE_KEY)
     localStorage.setItem(this.STORAGE_PRIVATE_KEY, privateKeyBase64);
 
     // Export public key (SPKI format) and return as hex string
@@ -32,14 +34,21 @@ export class EncryptionService {
 
   /** Load private key from localStorage */
   async getPrivateKey(): Promise<CryptoKey> {
-    const privateKeyBase64 = localStorage.getItem(this.STORAGE_PRIVATE_KEY);
+    if(this.STORAGE_PRIVATE_KEY){
+    const privateKeyBase64 = this.STORAGE_PRIVATE_KEY;
+    // const privateKeyBase64 = 14;
+// 
+    
     if (!privateKeyBase64) {
       throw new Error('Private key not found in localStorage. Generate keys first.');
     }
-    const privateKeyBuffer = this.base64ToArrayBuffer(privateKeyBase64);
+  
+     this.privateKeyBuffer = this.base64ToArrayBuffer(privateKeyBase64);
+  }
+  
     return window.crypto.subtle.importKey(
       'pkcs8',
-      privateKeyBuffer,
+      this.privateKeyBuffer,
       {
         name: 'ECDH',
         namedCurve: 'P-256',
@@ -47,6 +56,7 @@ export class EncryptionService {
       true,
       ['deriveKey', 'deriveBits']
     );
+    
   }
 
   /** Import receiver's public key (hex) */
@@ -67,6 +77,7 @@ export class EncryptionService {
   /** Derive AES key from ECDH shared secret */
   async deriveAESKey(receiverPublicKeyHex: string): Promise<CryptoKey> {
     const privateKey = await this.getPrivateKey();
+    console.log("private key",privateKey);
     const publicKey = await this.importPublicKey(receiverPublicKeyHex);
 
     // Derive a 256-bit AES key from shared secret
@@ -211,7 +222,7 @@ async decryptMessageAES(
 // }
 
 
-async decryptMessage(encryptedHex: string, ivHex: string, senderPublicKeyHex: string, receiverPrivateKeyHex: string): Promise<string> {
+async decryptMessage(encryptedHex: string, ivHex: string, senderPublicKeyHex: string): Promise<string> {
   try {
     if (!encryptedHex || !ivHex || !senderPublicKeyHex) {
       throw new Error('Missing required parameters for decryption');

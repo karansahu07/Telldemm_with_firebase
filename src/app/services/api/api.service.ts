@@ -47,8 +47,10 @@ export class ApiService {
 //   return this.post<{ publicKeyHex: string }>('/api/users/profile', { phone_number });
 // }
 
-getUserProfile(phone_number: string): Observable<{ publicKeyHex: string }> {
-    return this.http.post<{ publicKeyHex: string }>(`${this.baseUrl}/api/users/profile_by_mb`, { phone_number });
+getUserProfile(phone_number: string): Observable<{
+  user_id: any
+}> {
+    return this.http.post<{ user_id: string }>(`${this.baseUrl}/api/users/profile_by_mb`, { phone_number });
 
   }
 getUserProfilebyId(user_id: string): Observable<{ publicKeyHex: string }> {
