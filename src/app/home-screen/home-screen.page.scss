@@ -201,3 +201,17 @@ ion-fab {
 .chat-text {
     margin: 0;
 }
+
+
+//cxvgfb
+
+.gallery-scroll {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+  .thumb {
+    height: 80px;
+    margin-right: 10px;
+    border-radius: 10px;
+  }
+}

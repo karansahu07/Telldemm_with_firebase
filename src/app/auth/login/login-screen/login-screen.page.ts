@@ -1434,4 +1434,6 @@ export class LoginScreenPage {
       this.showToast(result.message || 'Invalid OTP', 'danger');
     }
   }
+
+  
 }

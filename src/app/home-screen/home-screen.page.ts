@@ -422,6 +422,9 @@ import { MenuPopoverComponent } from '../components/menu-popover/menu-popover.co
 import { FormsModule } from '@angular/forms';
 import { SocketService } from '../services/socket.service';
 import { ApiService } from '../services/api/api.service';
+// import { Camera, CameraResultType } from '@capacitor/camera';
+//import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-home-screen',
@@ -442,8 +445,12 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   searchText: string = '';
   selectedFilter: string = 'all';
   currUserId: string | null = localStorage.getItem("phone_number");
+  // capturedImage: string | undefined;
+  // scannedResult: string = '';
 
   chatList: any[] = [];
+  galleryImages: string[] = [];
+capturedImage: string = '';
 
   ngOnInit() {
     this.fetchAllUsers();
@@ -548,5 +555,59 @@ export class HomeScreenPage implements OnInit, OnDestroy {
     });
     await popover.present();
   }
+
+  goToContact() {
+  this.router.navigate(['/contact-screen']);
+}
+// async takePicture() {
+//     try {
+//       const image = await Camera.getPhoto({
+//         quality: 90,
+//         allowEditing: true,
+//         resultType: CameraResultType.Uri,
+//       });
+
+//       this.capturedImage = image.webPath!;
+//     } catch (error) {
+//       console.error('Camera error:', error);
+//     }
+//   }
+
+async openCamera() {
+  try {
+    const image = await Camera.getPhoto({
+      source: CameraSource.Camera, 
+      quality: 90,
+      resultType: CameraResultType.Uri,
+    });
+
+    this.capturedImage = image.webPath!;
+  } catch (error) {
+    console.error('Camera error:', error);
+  }
+}
+
+//   async startScan() {
+//   const status = await BarcodeScanner.checkPermission({ force: true });
+
+//   if (status.granted) {
+//     await BarcodeScanner.hideBackground();
+//     document.body.classList.add('scanner-active');
+
+//     const result = await BarcodeScanner.startScan();
+
+//     if (result.hasContent) {
+//       console.log('Scanned result:', result.content);
+//       alert('QR: ' + result.content);
+//     }
+
+//     await BarcodeScanner.showBackground();
+//     document.body.classList.remove('scanner-active');
+//   } else if (status.denied) {
+//     alert('Camera permission denied permanently. Please enable it from settings.');
+//     BarcodeScanner.openAppSettings();
+//   }
+// }
+
 }
 

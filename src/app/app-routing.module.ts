@@ -130,6 +130,11 @@ const routes: Routes = [
     path: 'profile-setup',
     canActivate: [AuthGuard],
     loadComponent: () => import('./components/profile-setup/profile-setup.page').then(m => m.ProfileSetupPage)
+  },
+  {
+    path: 'contact-screen',
+    // canActivate: [AuthGuard],
+    loadComponent: () => import('./contact-screen/contacts.page').then(m => m.ContactsPage)
   }
 ];
 

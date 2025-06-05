@@ -257,7 +257,7 @@
   </ion-modal>
 </div>
 
-
+<!-- otp modal open from here -->
 <div *ngIf="showOtpPopup" class="otp-popup-wrapper">
   <div class="backgrounds">
     <div class="opt">
@@ -267,19 +267,26 @@
     <div class="border-line"></div>
 
     <div class="otp-input">
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 0)"
-        (keydown)="handleBackspace($event, 0)" (paste)="$event.preventDefault()" #otp0>
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 1)"
-        (keydown)="handleBackspace($event, 1)" (paste)="$event.preventDefault()" #otp1>
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 2)"
-        (keydown)="handleBackspace($event, 2)" (paste)="$event.preventDefault()" #otp2>
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 3)"
-        (keydown)="handleBackspace($event, 3)" (paste)="$event.preventDefault()" #otp3>
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 4)"
-        (keydown)="handleBackspace($event, 4)" (paste)="$event.preventDefault()" #otp4>
-      <input type="text" maxlength="1" pattern="[0-9]*" (input)="onOtpInput($event, 5)"
-        (keydown)="handleBackspace($event, 5)" (paste)="$event.preventDefault()" #otp5>
-    </div>
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 0)" (keydown)="handleBackspace($event, 0)"
+    (paste)="$event.preventDefault()" #otp0 />
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 1)" (keydown)="handleBackspace($event, 1)"
+    (paste)="$event.preventDefault()" #otp1 />
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 2)" (keydown)="handleBackspace($event, 2)"
+    (paste)="$event.preventDefault()" #otp2 />
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 3)" (keydown)="handleBackspace($event, 3)"
+    (paste)="$event.preventDefault()" #otp3 />
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 4)" (keydown)="handleBackspace($event, 4)"
+    (paste)="$event.preventDefault()" #otp4 />
+  <input type="tel" inputmode="numeric" maxlength="1" pattern="[0-9]*"
+    (input)="onOtpInput($event, 5)" (keydown)="handleBackspace($event, 5)"
+    (paste)="$event.preventDefault()" #otp5 />
+</div>
+
 
     <div class="submit" style="margin-bottom: 10px;">
       <button [disabled]="!isOtpComplete() || isVerifyingOtp" (click)="goToHome()">
