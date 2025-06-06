@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, PopoverController } from '@ionic/angular';
-import { FooterTabsComponent } from "../../components/footer-tabs/footer-tabs.component";
 import { Router } from '@angular/router';
 import { MenuPopoverComponent } from '../../components/menu-popover/menu-popover.component'; // Add this impor
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { register } from 'swiper/element/bundle';
+import { FooterTabsComponent } from 'src/app/components/footer-tabs/footer-tabs.component';
+register();
 
 
 
@@ -64,6 +66,10 @@ export class StatusScreenPage implements OnInit {
     }
   }
 
+  get totalUnreadCount(): number {
+    return this.chatList.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+  }
+
   setFilter(filter: string) {
     this.selectedFilter = filter;
   }
@@ -87,4 +93,8 @@ export class StatusScreenPage implements OnInit {
   toggleIcon() {
     this.isRotated = !this.isRotated;
   }
+  slideOpts = {
+  slidesPerView: 'auto',
+  spaceBetween: 5
+};
 }

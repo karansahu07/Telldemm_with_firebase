@@ -28,7 +28,7 @@
     </ion-buttons>
 
     <ion-buttons class="btn-main-icon" slot="end">
-      <ion-button class="custom-search-icon" (click)="toggleSearch()">
+      <ion-button class="custom-search-icon" (click)="focusSearchBar()">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
       </ion-button>
       <ion-button (click)="presentPopover($event)" class="all-icon-btn">
@@ -45,12 +45,13 @@
         class="search-back-icon"
         (click)="toggleSearch()"
       ></ion-icon>
-
       <ion-input
-        [(ngModel)]="searchText"
+        #searchInput
+        [(ngModel)]="searchTerm"
         [type]="keyboardType"
         placeholder="Search name or number..."
         class="custom-search-input"
+        (ionInput)="filterContacts()"
       ></ion-input>
 
       <ion-icon
@@ -103,7 +104,7 @@
   </ion-list-header>
 
   <ion-list class="list2" lines="none">
-    <ion-item *ngFor="let contact of contacts">
+    <ion-item *ngFor="let contact of filteredContacts">
       <ion-avatar slot="start">
         <img [src]="contact.image" />
       </ion-avatar>
