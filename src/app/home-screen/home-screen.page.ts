@@ -425,6 +425,9 @@ import { ApiService } from '../services/api/api.service';
 // import { Camera, CameraResultType } from '@capacitor/camera';
 //import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+// import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+
 
 @Component({
   selector: 'app-home-screen',
@@ -447,6 +450,8 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   currUserId: string | null = localStorage.getItem("phone_number");
   // capturedImage: string | undefined;
   // scannedResult: string = '';
+  scannedText: string = '';
+
 
   chatList: any[] = [];
   galleryImages: string[] = [];
@@ -573,6 +578,7 @@ capturedImage: string = '';
 //     }
 //   }
 
+//camera
 async openCamera() {
   try {
     const image = await Camera.getPhoto({
@@ -587,27 +593,30 @@ async openCamera() {
   }
 }
 
-//   async startScan() {
-//   const status = await BarcodeScanner.checkPermission({ force: true });
 
-//   if (status.granted) {
-//     await BarcodeScanner.hideBackground();
-//     document.body.classList.add('scanner-active');
+//bar-code
+async scanBarcode() {
+  const status = await BarcodeScanner.checkPermission({ force: true });
 
-//     const result = await BarcodeScanner.startScan();
+  if (!status.granted) {
+    alert('Camera permission is required.');
+    return;
+  }
 
-//     if (result.hasContent) {
-//       console.log('Scanned result:', result.content);
-//       alert('QR: ' + result.content);
-//     }
+  await BarcodeScanner.hideBackground(); // Optional: hides webview background
+  document.body.classList.add('scanner-active'); // Add styling
 
-//     await BarcodeScanner.showBackground();
-//     document.body.classList.remove('scanner-active');
-//   } else if (status.denied) {
-//     alert('Camera permission denied permanently. Please enable it from settings.');
-//     BarcodeScanner.openAppSettings();
-//   }
-// }
+  const result = await BarcodeScanner.startScan(); // Starts scanning
+
+  if (result.hasContent) {
+    alert(`Scanned: ${result.content}`);
+  } else {
+    alert('No barcode found.');
+  }
+
+  await BarcodeScanner.showBackground(); // Restore webview
+  document.body.classList.remove('scanner-active');
+}
 
 }
 

@@ -13,9 +13,17 @@
       <!-- <ion-button>
         <img src="assets/images/qr-code.svg" />
       </ion-button> -->
-      <ion-button>
+      <!-- <ion-button>
         <img src="assets/images/qr-code.svg" />
-      </ion-button>
+      </ion-button> -->
+
+      <ion-button (click)="scanBarcode()">
+  <img src="assets/images/qr-code.svg" />
+</ion-button>
+
+<!-- Optional: Show result -->
+<p *ngIf="scannedText">Scanned: {{ scannedText }}</p>
+
       <ion-button (click)="openCamera()">
         <img src="assets/images/camera.svg" />
       </ion-button>
