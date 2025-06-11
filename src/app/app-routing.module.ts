@@ -133,7 +133,7 @@ const routes: Routes = [
   },
   {
     path: 'contact-screen',
-    // canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],  // check something
     loadComponent: () => import('./contact-screen/contacts.page').then(m => m.ContactsPage)
   }
 ];
