@@ -16,12 +16,22 @@ export class ApiService {
   return this.http.post<T>(`${this.baseUrl}${url}`, payload);
 }
 
+  // /**
+  //  * Send OTP to user
+  //  * @param phone_number 
+  //  */
+  // sendOtp(phone_number: string): Observable<any> {
+  //   return this.post('/send-otp', { phone_number });
+  // }
+
+
   /**
    * Send OTP to user
    * @param phone_number 
+   * @param email 
    */
-  sendOtp(phone_number: string): Observable<any> {
-    return this.post('/send-otp', { phone_number });
+  sendOtp(phone_number: string, email: string): Observable<any> {
+    return this.post('/api/auth/send-otp', { phone_number, email });
   }
 
   /**

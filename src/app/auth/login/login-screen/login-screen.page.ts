@@ -1288,6 +1288,7 @@ export class LoginScreenPage {
   otp: string[] = Array(6).fill('');
   timer: number = 60;
   timerInterval: any;
+  email: string = '';
 
   countries = [
     { name: 'India', code: '+91' }, { name: 'USA', code: '+1' },
@@ -1307,6 +1308,7 @@ export class LoginScreenPage {
   isSendingOtp: boolean = false;
   isVerifyingOtp: boolean = false;
 
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -1324,6 +1326,11 @@ export class LoginScreenPage {
 
   isPhoneValid(): boolean {
     return /^\d{10}$/.test(this.phoneNumber.trim());
+  }
+
+  isEmailValid(): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(this.email.trim());
   }
 
   isOtpComplete(): boolean {
@@ -1376,17 +1383,42 @@ export class LoginScreenPage {
     this.isSendingOtp = false;
   }
 
-  async sendOtp() {
+  // async sendOtp() {
+  //   const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+  //   try {
+  //     const res = await this.authService.sendOtp(fullPhone);
+  //     if (res.status) {
+  //       this.showOtpPopup = true;
+  //       this.startTimer();
+  //     } else {
+  //       this.showToast(res.message || 'Failed to send OTP.');
+  //     }
+  //   } catch (err) {
+  //     this.showToast('Failed to send OTP. Try again.', 'danger');
+  //   }
+  // }
+
+   async sendOtp() {
     const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+    const payload = {
+      phone_number: fullPhone,
+      email: this.email,
+    };
+
     try {
-      const res = await this.authService.sendOtp(fullPhone);
+      console.log('📨 Sending OTP payload:', payload);
+      const res = await this.authService.sendOtp(payload);
+      console.log('📬 OTP API Response:', res);
+
       if (res.status) {
+        this.showToast('OTP sent successfully.', 'success');
         this.showOtpPopup = true;
         this.startTimer();
       } else {
-        this.showToast(res.message || 'Failed to send OTP.');
+        this.showToast(res.message || 'Failed to send OTP.', 'danger');
       }
     } catch (err) {
+      console.error('❌ OTP API Error:', err);
       this.showToast('Failed to send OTP. Try again.', 'danger');
     }
   }
@@ -1429,6 +1461,8 @@ export class LoginScreenPage {
 
     if (result.success) {
       this.showToast('Login successful!', 'success');
+      localStorage.setItem('userId', this.phoneNumber); //this will temporary
+const userId = this.phoneNumber;   //this will temporary
       this.router.navigateByUrl('/profile-setup');
     } else {
       this.showToast(result.message || 'Invalid OTP', 'danger');

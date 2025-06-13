@@ -198,16 +198,16 @@
       <div style="margin-top: 30px;">
 
         <div class="Lorem">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <p>TellDemm will need to verify your account. What's my number?</p>
         </div>
 
         <!-- Country Selection Dropdown -->
-        <div class="main-dropdown">
+        <!-- <div class="main-dropdown">
           <select class="drop-down" (change)="onCountryChange($event)">
             <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
           </select>
           <div class="underline-text"></div>
-        </div>
+        </div> -->
 
         <!-- Phone Number Input -->
         <div class="main-country">
@@ -226,6 +226,16 @@
         <p *ngIf="phoneNumber && !isPhoneValid()" class="required-line">
           Please enter a valid 10-digit mobile number.
         </p>
+
+        <div class="email-wrapper" style="margin-top: 20px;">
+  <input type="email" placeholder="Enter your email" [(ngModel)]="email" name="email"
+    class="email-input" style="text-align: left;" />
+  <p class="underline-country"></p>
+</div>
+
+<p *ngIf="email && !isEmailValid()" class="required-line">
+  Please enter a valid email address.
+</p>
       </div>
 
       <!-- Submit Button -->
@@ -234,7 +244,8 @@
       </div> -->
 
       <div class="agree-div">
-        <button [disabled]="!isPhoneValid() || isSendingOtp" (click)="onAgreeClick()">
+        <!-- <button [disabled]="!isPhoneValid() || isSendingOtp" (click)="onAgreeClick()"> -->
+          <button [disabled]="!isPhoneValid() || !isEmailValid() || isSendingOtp" (click)="onAgreeClick()">
           <ng-container *ngIf="!isSendingOtp">Agree & Continue</ng-container>
           <ion-spinner *ngIf="isSendingOtp" name="crescent" color="light"></ion-spinner>
         </button>

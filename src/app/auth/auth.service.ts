@@ -63,9 +63,14 @@ export class AuthService {
     private encryptionService: EncryptionService
   ) {}
 
-  sendOtp(fullPhone: string): Promise<any> {
-    return this.api.post('/api/auth/send-otp', { phone_number: fullPhone }).toPromise();
-  }
+  // sendOtp(fullPhone: string): Promise<any> {
+  //   return this.api.post('/api/auth/send-otp', { phone_number: fullPhone }).toPromise();
+  // }
+
+    // Send OTP using phone_number + email
+  sendOtp(payload: { phone_number: string; email: string }): Promise<any> {
+  return this.api.post('/api/auth/send-otp', payload).toPromise();
+}
 
   async verifyOtp(fullPhone: string, otp: string): Promise<{ success: boolean; userId?: number; message?: string }> {
     const payload = { phone_number: fullPhone, otp_code: otp };
