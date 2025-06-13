@@ -17,18 +17,18 @@ ion-toolbar {
 }
 
 
-.input-bar {
-  position: fixed;
-  bottom: 10px;
-  width: 90%;
-  left: 5%;
-  background: black;
-  border-radius: 25px;
-  padding: 5px 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-}
+// .input-bar {
+//   position: fixed;
+//   bottom: 10px;
+//   width: 90%;
+//   left: 5%;
+//   background: black;
+//   border-radius: 25px;
+//   padding: 5px 10px;
+//   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+//   display: flex;
+//   align-items: center;
+// }
 
 // .message-bubble {
 //   max-width: 70%;
@@ -103,19 +103,20 @@ ion-toolbar {
 //   white-space: nowrap;
 // }
 
-ion-content.chat-background {
-  // --background: #f4f4f4;
-  padding: 10px;
-  overflow-y: auto; // optional if needed
-}
+// ion-content.chat-background {
+//   // --background: #f4f4f4;
+//   padding: 10px;
+//   overflow-y: auto; // optional if needed
+// }
 
 .chat-messages {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 100px; // reserve space above input bar
+  padding: 10px;
+  padding-bottom: 100px;
+  overflow-y: auto;
+  min-height: 100%;
 }
-
 
 .footer {
   position: fixed;
@@ -127,6 +128,25 @@ ion-content.chat-background {
   z-index: 10;
 }
 
+.input-bar {
+  position: fixed;
+  bottom: 10px;
+  width: 90%;
+  left: 5%;
+  background: black;
+  border-radius: 25px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  z-index: 11; /* Ensure input bar is above other elements */
+}
+
+ion-content.chat-background {
+ // --padding-bottom: 100px; /* Match or exceed footer height */
+  overflow-y: auto;
+}
+
 // .chat-background {
 //   --background: #f4f4f4;
 // }
@@ -136,6 +156,8 @@ ion-content.chat-background {
   flex-direction: column;
   padding: 10px;
   padding-bottom: 90px; // Add padding to avoid footer overlap
+  // height: 100%;
+  // overflow-y: auto;
 }
 
 .message-bubble {
@@ -183,3 +205,11 @@ ion-content.chat-background {
 }
 
 
+// ion-content.chat-background {
+//   --padding-bottom: 80px; 
+// }
+
+
+// ion-content {
+//   --keyboard-offset: 0px;
+// }

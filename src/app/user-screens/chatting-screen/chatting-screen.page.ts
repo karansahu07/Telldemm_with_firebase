@@ -551,7 +551,7 @@
 //               console.log("encryptedHexinit", encryptedHex);
 //               console.log("ivHexinit", ivHex);
 
-             
+
 
 //               if (msg.senderId == this.receiver_id && msg.receiverId == this.sender_Id) {
 
@@ -846,7 +846,7 @@
 
 
 
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -862,6 +862,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chatting-screen.page.scss']
 })
 export class ChattingScreenPage implements OnInit, OnDestroy {
+  @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  
   messages: any[] = [];
   messageText: string = '';
   receiverId: string = '';
@@ -875,10 +877,9 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.senderId = localStorage.getItem('userId') || '';
-    // this.receiverId = this.route.snapshot.queryParamMap.get('receiverId') || '';
     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
-this.receiverId = decodeURIComponent(rawId);
-    console.log("sender_id",this.senderId);
+    this.receiverId = decodeURIComponent(rawId);
+    console.log("sender_id", this.senderId);
     console.log(this.receiverId);
     this.loadFromLocalStorage();
 
@@ -890,24 +891,50 @@ this.receiverId = decodeURIComponent(rawId);
       if (isCurrentChat) {
         this.messages.push(msg);
         this.saveToLocalStorage();
+        this.scrollToBottom();
       }
     });
+
+    // Auto scroll to bottom on init
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
   saveToLocalStorage() {
     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
   }
+  
   loadFromLocalStorage() {
     this.messages = JSON.parse(localStorage.getItem(this.receiverId) as unknown as string) || []
   }
 
   goToCallingScreen() {
-     this.router.navigate(['/calling-screen']);
-   }
+    this.router.navigate(['/calling-screen']);
+  }
 
-   onInputChange() {
-  this.showSendButton = this.messageText?.trim().length > 0;
-}
+  onInputChange() {
+    this.showSendButton = this.messageText?.trim().length > 0;
+  }
+
+  onInputFocus() {
+    // Simple scroll to bottom when input is focused
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 300);
+  }
+
+  onInputBlur() {
+    // Optional: Handle input blur if needed
+  }
+
+  scrollToBottom() {
+    if (this.scrollContainer) {
+      setTimeout(() => {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      }, 100);
+    }
+  }
 
   sendMessage() {
     if (!this.messageText.trim()) return;
@@ -917,17 +944,17 @@ this.receiverId = decodeURIComponent(rawId);
       sender_id: this.senderId,
       receiver_id: this.receiverId,
       text: this.messageText,
-      // timestamp: new Date().toLocaleTimeString()
       timestamp: new Date().toLocaleTimeString([], {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-})
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })
     };
 
-    // this.messages.push(message);
     this.socketService.sendMessage(message);
     this.messageText = '';
+    this.showSendButton = false;
+    this.scrollToBottom();
   }
 
   ngOnDestroy() {
