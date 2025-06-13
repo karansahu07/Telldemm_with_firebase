@@ -1399,7 +1399,7 @@ export class LoginScreenPage {
   // }
 
    async sendOtp() {
-    const fullPhone = `${this.countryCode}${this.phoneNumber}`;
+    const fullPhone = `${this.phoneNumber}`;
     const payload = {
       phone_number: fullPhone,
       email: this.email,
