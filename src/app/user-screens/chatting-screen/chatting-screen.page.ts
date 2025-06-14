@@ -846,13 +846,135 @@
 
 
 
+// import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
+// import { ActivatedRoute } from '@angular/router';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { IonicModule } from '@ionic/angular';
+// import { SocketService } from '../../services/socket.service';
+// import { Subscription } from 'rxjs';
+// import { Keyboard } from '@capacitor/keyboard';
+
+// @Component({
+//   selector: 'app-chatting-screen',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule, IonicModule],
+//   templateUrl: './chatting-screen.page.html',
+//   styleUrls: ['./chatting-screen.page.scss']
+// })
+// export class ChattingScreenPage implements OnInit, OnDestroy {
+//   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  
+//   messages: any[] = [];
+//   messageText: string = '';
+//   receiverId: string = '';
+//   senderId: string = '';
+//   private messageSub: Subscription | undefined;
+//   showSendButton = false;
+
+//   private socketService = inject(SocketService);
+//   private route = inject(ActivatedRoute);
+//   router: any;
+
+//   ngOnInit() {
+//      Keyboard.setScroll({ isDisabled: false });
+//     this.senderId = localStorage.getItem('userId') || '';
+//     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+//     this.receiverId = decodeURIComponent(rawId);
+//     console.log("sender_id", this.senderId);
+//     console.log(this.receiverId);
+//     this.loadFromLocalStorage();
+
+//     this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
+//       const isCurrentChat =
+//         (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
+//         (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
+
+//       if (isCurrentChat) {
+//         this.messages.push(msg);
+//         this.saveToLocalStorage();
+//         this.scrollToBottom();
+//       }
+//     });
+
+//     // Auto scroll to bottom on init
+//     setTimeout(() => {
+//       this.scrollToBottom();
+//     }, 100);
+//   }
+
+//   saveToLocalStorage() {
+//     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
+//   }
+  
+//   loadFromLocalStorage() {
+//     this.messages = JSON.parse(localStorage.getItem(this.receiverId) as unknown as string) || []
+//   }
+
+//   goToCallingScreen() {
+//     this.router.navigate(['/calling-screen']);
+//   }
+
+//   onInputChange() {
+//     this.showSendButton = this.messageText?.trim().length > 0;
+//   }
+
+//   onInputFocus() {
+//     // Simple scroll to bottom when input is focused
+//     setTimeout(() => {
+//       this.scrollToBottom();
+//     }, 300);
+//   }
+
+//   onInputBlur() {
+//     // Optional: Handle input blur if needed
+//   }
+
+//   scrollToBottom() {
+//     if (this.scrollContainer) {
+//       setTimeout(() => {
+//         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+//       }, 100);
+//     }
+//   }
+
+//   sendMessage() {
+//     if (!this.messageText.trim()) return;
+
+//     const message = {
+//       type: "private",
+//       sender_id: this.senderId,
+//       receiver_id: this.receiverId,
+//       text: this.messageText,
+//       timestamp: new Date().toLocaleTimeString([], {
+//         hour: '2-digit',
+//         minute: '2-digit',
+//         hour12: true
+//       })
+//     };
+
+//     this.socketService.sendMessage(message);
+//     this.messageText = '';
+//     this.showSendButton = false;
+//     this.scrollToBottom();
+//   }
+
+//   ngOnDestroy() {
+//     this.messageSub?.unsubscribe();
+//   }
+// }
+
+
+
+
 import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonContent, IonicModule, Platform } from '@ionic/angular';
 import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs';
+import { Keyboard } from '@capacitor/keyboard';
 
 @Component({
   selector: 'app-chatting-screen',
@@ -863,6 +985,7 @@ import { Subscription } from 'rxjs';
 })
 export class ChattingScreenPage implements OnInit, OnDestroy {
   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
   
   messages: any[] = [];
   messageText: string = '';
@@ -870,12 +993,19 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
   senderId: string = '';
   private messageSub: Subscription | undefined;
   showSendButton = false;
+  private keyboardListeners: any[] = [];
 
   private socketService = inject(SocketService);
   private route = inject(ActivatedRoute);
+  private platform = inject(Platform);
   router: any;
 
-  ngOnInit() {
+  async ngOnInit() {
+    Keyboard.setScroll({ isDisabled: false });
+    
+    // Initialize keyboard listeners
+    await this.initKeyboardListeners();
+    
     this.senderId = localStorage.getItem('userId') || '';
     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
     this.receiverId = decodeURIComponent(rawId);
@@ -901,6 +1031,27 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
     }, 100);
   }
 
+  private async initKeyboardListeners() {
+    if (this.platform.is('capacitor')) {
+      try {
+        const showListener = await Keyboard.addListener('keyboardWillShow', (info) => {
+          this.handleKeyboardShow(info.keyboardHeight);
+        });
+        
+        const hideListener = await Keyboard.addListener('keyboardWillHide', () => {
+          this.handleKeyboardHide();
+        });
+
+        this.keyboardListeners.push(showListener, hideListener);
+      } catch (error) {
+        console.log('Keyboard plugin not available, using fallback');
+        this.setupFallbackKeyboardDetection();
+      }
+    } else {
+      this.setupFallbackKeyboardDetection();
+    }
+  }
+
   saveToLocalStorage() {
     localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
   }
@@ -913,28 +1064,40 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
     this.router.navigate(['/calling-screen']);
   }
 
+  ngOnDestroy() {
+    // Clean up listeners
+    this.keyboardListeners.forEach(listener => listener?.remove());
+    this.messageSub?.unsubscribe();
+  }
+
   onInputChange() {
     this.showSendButton = this.messageText?.trim().length > 0;
   }
 
   onInputFocus() {
-    // Simple scroll to bottom when input is focused
+    // Add slight delay to ensure keyboard is detected and scroll to bottom
     setTimeout(() => {
+      this.adjustFooterPosition();
       this.scrollToBottom();
     }, 300);
   }
 
   onInputBlur() {
-    // Optional: Handle input blur if needed
+    // Reset footer when input loses focus
+    setTimeout(() => {
+      this.resetFooterPosition();
+    }, 300);
   }
 
-  scrollToBottom() {
-    if (this.scrollContainer) {
-      setTimeout(() => {
-        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-      }, 100);
-    }
+ scrollToBottom() {
+  if (this.ionContent) {
+    setTimeout(() => {
+      this.ionContent.scrollToBottom(300);
+    }, 100);
   }
+}
+
+
 
   sendMessage() {
     if (!this.messageText.trim()) return;
@@ -957,9 +1120,136 @@ export class ChattingScreenPage implements OnInit, OnDestroy {
     this.scrollToBottom();
   }
 
-  ngOnDestroy() {
-    this.messageSub?.unsubscribe();
+  private handleKeyboardShow(keyboardHeight: number) {
+    const footer = document.querySelector('.footer-fixed') as HTMLElement;
+    const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+    const ionContent = document.querySelector('ion-content') as HTMLElement;
+    
+    if (footer) {
+      footer.style.bottom = `${keyboardHeight}px`;
+      footer.style.transition = 'bottom 0.3s ease-in-out';
+    }
+    
+    // Adjust chat messages container
+    if (chatMessages) {
+      chatMessages.style.paddingBottom = `${keyboardHeight + 80}px`; // keyboard height + footer height
+      chatMessages.style.transition = 'padding-bottom 0.3s ease-in-out';
+    }
+    
+    // Adjust ion-content if needed
+    if (ionContent) {
+      ionContent.style.paddingBottom = `${keyboardHeight}px`;
+      ionContent.style.transition = 'padding-bottom 0.3s ease-in-out';
+    }
+    
+    // Scroll to bottom when keyboard opens
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 350);
+  }
+
+  private handleKeyboardHide() {
+    const footer = document.querySelector('.footer-fixed') as HTMLElement;
+    const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+    const ionContent = document.querySelector('ion-content') as HTMLElement;
+    
+    if (footer) {
+      footer.style.bottom = '0px';
+      footer.style.transition = 'bottom 0.3s ease-in-out';
+    }
+    
+    // Reset chat messages container
+    if (chatMessages) {
+      chatMessages.style.paddingBottom = '80px'; // Reset to original footer height
+      chatMessages.style.transition = 'padding-bottom 0.3s ease-in-out';
+    }
+    
+    // Reset ion-content
+    if (ionContent) {
+      ionContent.style.paddingBottom = '0px';
+      ionContent.style.transition = 'padding-bottom 0.3s ease-in-out';
+    }
+  }
+
+  private setupFallbackKeyboardDetection() {
+    // Fallback for web or when keyboard plugin is not available
+    let initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    let initialChatPadding = 80; // Initial padding bottom
+    
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const heightDifference = initialViewportHeight - currentHeight;
+      
+      const footer = document.querySelector('.footer-fixed') as HTMLElement;
+      const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+      const ionContent = document.querySelector('ion-content') as HTMLElement;
+      
+      if (heightDifference > 150) { // Keyboard is likely open
+        if (footer) {
+          footer.style.bottom = `${heightDifference}px`;
+          footer.style.transition = 'bottom 0.3s ease-in-out';
+        }
+        if (chatMessages) {
+          chatMessages.style.paddingBottom = `${heightDifference + initialChatPadding}px`;
+          chatMessages.style.transition = 'padding-bottom 0.3s ease-in-out';
+        }
+        if (ionContent) {
+          ionContent.style.paddingBottom = `${heightDifference}px`;
+          ionContent.style.transition = 'padding-bottom 0.3s ease-in-out';
+        }
+        // Auto scroll when keyboard opens
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 350);
+      } else {
+        // Reset all elements
+        if (footer) {
+          footer.style.bottom = '0px';
+          footer.style.transition = 'bottom 0.3s ease-in-out';
+        }
+        if (chatMessages) {
+          chatMessages.style.paddingBottom = `${initialChatPadding}px`;
+          chatMessages.style.transition = 'padding-bottom 0.3s ease-in-out';
+        }
+        if (ionContent) {
+          ionContent.style.paddingBottom = '0px';
+          ionContent.style.transition = 'padding-bottom 0.3s ease-in-out';
+        }
+      }
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+    } else {
+      window.addEventListener('resize', handleViewportChange);
+    }
+  }
+
+  private adjustFooterPosition() {
+    // Additional method for manual adjustment
+    if (this.platform.is('mobile')) {
+      const footer = document.querySelector('.footer-fixed') as HTMLElement;
+      const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+      
+      if (footer) {
+        footer.classList.add('keyboard-active');
+      }
+      if (chatMessages) {
+        chatMessages.classList.add('keyboard-active');
+      }
+    }
+  }
+
+  private resetFooterPosition() {
+    const footer = document.querySelector('.footer-fixed') as HTMLElement;
+    const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+    
+    if (footer) {
+      footer.classList.remove('keyboard-active');
+    }
+    if (chatMessages) {
+      chatMessages.classList.remove('keyboard-active');
+    }
   }
 }
-
 
