@@ -644,6 +644,7 @@ import { MenuPopoverComponent } from '../components/menu-popover/menu-popover.co
 import { FormsModule } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import { ApiService } from '../services/api/api.service';
 
 @Component({
   selector: 'app-home-screen',
@@ -657,6 +658,7 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private popoverCtrl: PopoverController,
+    private service: ApiService
   ) {}
 
   searchText: string = '';
@@ -669,42 +671,84 @@ export class HomeScreenPage implements OnInit, OnDestroy {
   galleryImages: string[] = [];
 
   ngOnInit() {
-    this.fetchAllUsers();
+    // this.fetchAllUsers();
+     this.getAllUsers();
   }
 
   ngOnDestroy(): void {
     // Nothing to clean up in this version
   }
 
-  fetchAllUsers() {
-    const allUsers = [
-      {
-        name: 'Karan',
-        receiver_Id: '9138152160',
-        phone_number: '+919138152160',
-        message: 'Hello',
-        messageStatus: 'sent',
-        unread: false,
-        time: '10:00 AM',
-        unreadCount: 0,
-        group: false
-      },
-      {
-        name: 'Khushboo',
-        receiver_Id: '7700075618',
-        phone_number: '+917700075618',
-        message: 'How are you?',
-        messageStatus: 'received',
-        unread: true,
-        time: '11:00 AM',
-        unreadCount: 2,
-        group: false
-      }
-    ];
+  // fetchAllUsers() {
+  //   const allUsers = [
+  //     {
+  //       name: 'Karan',
+  //       receiver_Id: '9138152160',
+  //       phone_number: '+919138152160',
+  //       message: 'Hello',
+  //       messageStatus: 'sent',
+  //       unread: false,
+  //       time: '10:00 AM',
+  //       unreadCount: 0,
+  //       group: false
+  //     },
+  //     {
+  //       name: 'Khushboo',
+  //       receiver_Id: '7700075618',
+  //       phone_number: '+917700075618',
+  //       message: 'How are you?',
+  //       messageStatus: 'received',
+  //       unread: true,
+  //       time: '11:00 AM',
+  //       unreadCount: 2,
+  //       group: false
+  //     },
+  //     {
+  //       name: 'khushi',
+  //       receiver_Id: '7700075619',
+  //       phone_number: '+917700075619',
+  //       message: '?',
+  //       messageStatus: 'received',
+  //       unread: true,
+  //       time: '1:00 AM',
+  //       unreadCount: 2,
+  //       group: false
+  //     }
+  //   ];
 
-    const currentUser = this.currUserId?.toString();
-    this.chatList = allUsers.filter(u => u.phone_number !== currentUser);
-  }
+  //   const currentUser = this.currUserId?.toString();
+  //   this.chatList = allUsers.filter(u => u.phone_number !== currentUser);
+  // }
+
+ getAllUsers() {
+  const currentUserPhone = localStorage.getItem('phone_number'); // e.g. "+919138152160"
+
+  this.service.getAllUsers().subscribe((users: any[]) => {
+    users.forEach(user => {
+      // Compare with phone number from localStorage
+      if (user.phone_number !== currentUserPhone) {
+        this.service.getUserProfilebyId(user.user_id.toString()).subscribe((profile: any) => {
+          const receiverId = profile.phone_number;
+
+          // Add to chatList with receiver_Id
+          this.chatList.push({
+            ...user,
+            receiver_Id: receiverId
+          });
+        });
+      }
+    });
+  });
+}
+
+
+
+// getAllUsers() {
+//     this.service.getAllUsers().subscribe((users: any[]) => {
+//       const currentUser = this.currUserId?.toString();
+//       this.chatList = users.filter(u => u.phone_number !== currentUser);
+//     });
+//   }
 
   get filteredChats() {
     let filtered = this.chatList;
@@ -736,12 +780,26 @@ export class HomeScreenPage implements OnInit, OnDestroy {
     this.selectedFilter = filter;
   }
 
+  // openChat(chat: any) {
+  //   console.log("receiver_id",chat.receiver_Id);
+  //   this.router.navigate(['/chatting-screen'], {
+  //     queryParams: { receiverId: chat.receiver_Id }
+  //   });
+  // }
+
+
   openChat(chat: any) {
-    console.log("receiver_id",chat.receiver_Id);
-    this.router.navigate(['/chatting-screen'], {
-      queryParams: { receiverId: chat.receiver_Id }
-    });
-  }
+  let rawPhone = chat.receiverId || chat.receiver_Id;
+
+  // Remove "+91" or any non-digit characters and take last 10 digits
+  const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10);
+
+  console.log("Cleaned receiverId:", cleanPhone);
+
+  this.router.navigate(['/chatting-screen'], {
+    queryParams: { receiverId: cleanPhone }
+  });
+}
 
   async presentPopover(ev: any) {
     const popover = await this.popoverCtrl.create({
