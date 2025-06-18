@@ -1312,15 +1312,23 @@
 // }
 
 
-import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  ViewChild,
+  ElementRef,
+  AfterViewInit
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonicModule, Platform } from '@ionic/angular';
-import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs';
 import { Keyboard } from '@capacitor/keyboard';
-import { ApiService } from 'src/app/services/api/api.service';
+import { FirebaseChatService } from 'src/app/services/firebase-chat.service';
+import { EncryptionService } from 'src/app/services/encryption.service';
 
 @Component({
   selector: 'app-chatting-screen',
@@ -1334,24 +1342,24 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
   messages: any[] = [];
-  messageText: string = '';
-  receiverId: string = '';
-  senderId: string = '';
-  private messageSub: Subscription | undefined;
+  messageText = '';
+  receiverId = '';
+  senderId = '';
+  private messageSub?: Subscription;
   showSendButton = false;
   private keyboardListeners: any[] = [];
 
-  private socketService = inject(SocketService);
+  private chatService = inject(FirebaseChatService);
   private route = inject(ActivatedRoute);
   private platform = inject(Platform);
-  private apiService = inject(ApiService);
-  router: any;
+  private encryptionService = inject(EncryptionService);
 
-  // Pagination
+  roomId = '';
   limit = 10;
   page = 0;
   isLoadingMore = false;
   hasMoreMessages = true;
+  router: any;
 
   async ngOnInit() {
     Keyboard.setScroll({ isDisabled: false });
@@ -1360,26 +1368,13 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     this.senderId = localStorage.getItem('userId') || '';
     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
     this.receiverId = decodeURIComponent(rawId);
-    console.log(this.receiverId);
+
+    this.roomId = this.getRoomId(this.senderId, this.receiverId);
 
     this.loadFromLocalStorage();
-    this.loadMessagesFromServer();
+    this.listenForMessages();
 
-    this.messageSub = this.socketService.onMessage().subscribe((msg: any) => {
-      const isCurrentChat =
-        (msg.sender_id === this.receiverId && msg.receiver_id === this.senderId) ||
-        (msg.sender_id === this.senderId && msg.receiver_id === this.receiverId);
-
-      if (isCurrentChat) {
-        this.messages.push(msg);
-        this.saveToLocalStorage();
-        this.scrollToBottom();
-      }
-    });
-
-    setTimeout(() => {
-      this.scrollToBottom();
-    }, 100);
+    setTimeout(() => this.scrollToBottom(), 100);
   }
 
   ngAfterViewInit() {
@@ -1387,102 +1382,65 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
       this.ionContent.ionScroll.subscribe(async (event: any) => {
         if (event.detail.scrollTop < 50 && this.hasMoreMessages && !this.isLoadingMore) {
           this.page += 1;
-          this.loadMessagesFromServer(true); // load more messages
+          this.loadMessagesFromFirebase(true);
         }
       });
     }
   }
 
-  loadMessagesFromServer(isPagination = false): void {
-    if (this.isLoadingMore) return;
-    this.isLoadingMore = true;
-
-    const payload = {
-      senderId: this.senderId,
-      receiverId: this.receiverId,
-      limit: this.limit,
-      offset: this.page * this.limit
-    };
-
-    this.apiService.post('/api/chats/prototype-messages', payload).subscribe({
-      next: (res: any) => {
-        const newMessages = res.messages || [];
-
-        if (newMessages.length < this.limit) {
-          this.hasMoreMessages = false;
-        }
-
-        if (isPagination) {
-          this.ionContent.getScrollElement().then((scrollEl) => {
-            const oldHeight = scrollEl.scrollHeight;
-
-            this.messages = [...newMessages, ...this.messages];
-
-            setTimeout(() => {
-              this.ionContent.getScrollElement().then((updatedScrollEl) => {
-                const newHeight = updatedScrollEl.scrollHeight;
-                const delta = newHeight - oldHeight;
-                this.ionContent.scrollByPoint(0, delta, 0);
-              });
-            }, 100);
-          });
-        } else {
-          this.messages = newMessages;
-          this.scrollToBottom();
-        }
-
-        this.saveToLocalStorage();
-        this.isLoadingMore = false;
-      },
-      error: (err) => {
-        console.error('Failed to load messages from server:', err);
-        this.isLoadingMore = false;
-      }
-    });
+  getRoomId(userA: string, userB: string): string {
+    return userA < userB ? `${userA}_${userB}` : `${userB}_${userA}`;
   }
 
+  listenForMessages() {
+    this.messageSub = this.chatService.listenForMessages(this.roomId).subscribe((data) => {
+  this.messages = data.map(msg => {
+    return {
+      ...msg,
+      text: this.encryptionService.decrypt(msg.text)
+    };
+  });
+
+  this.saveToLocalStorage();
+  setTimeout(() => this.scrollToBottom(), 100);
+});
+  }
+
+  loadMessagesFromFirebase(isPagination = false) {
+    // Optional: Pagination logic using Firebase `limitToLast`, `endAt`, etc.
+  }
+
+ sendMessage() {
+  if (!this.messageText.trim()) return;
+
+  const date = new Date();
+  const encryptedText = this.encryptionService.encrypt(this.messageText.trim());
+
+  const message = {
+    sender_id: this.senderId,
+    receiver_id: this.receiverId,
+    text: encryptedText, // encrypted text saved in DB
+    timestamp: `${date.toLocaleDateString('en-IN')}, ${date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    })}`
+  };
+
+  this.chatService.sendMessage(this.roomId, message); 
+
+  this.messageText = '';
+  this.showSendButton = false;
+  this.scrollToBottom();
+}
+
   saveToLocalStorage() {
-    localStorage.setItem(this.receiverId, JSON.stringify(this.messages));
+    localStorage.setItem(this.roomId, JSON.stringify(this.messages));
   }
 
   loadFromLocalStorage() {
-    this.messages = JSON.parse(localStorage.getItem(this.receiverId) as string) || [];
-  }
-
-  sendMessage() {
-    if (!this.messageText.trim()) return;
-
-    // const message = {
-    //   type: "private",
-    //   sender_id: this.senderId,
-    //   receiver_id: this.receiverId,
-    //   text: this.messageText,
-    //   date: new Date().toLocaleDateString('en-IN'),
-    //   timestamp: new Date().toLocaleTimeString([], {
-    //     hour: '2-digit',
-    //     minute: '2-digit',
-    //     hour12: true
-    //   })
-    // };
-
-    const date = new Date();
-    const message = {
-      type: "private",
-      sender_id: this.senderId,
-      receiver_id: this.receiverId,
-      text: this.messageText,
-      timestamp: `${date.toLocaleDateString('en-IN')}, ${date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      })}`
-    };
-
-
-    this.socketService.sendMessage(message);
-    this.messageText = '';
-    this.showSendButton = false;
-    this.scrollToBottom();
+    const cached = localStorage.getItem(this.roomId);
+    this.messages = cached ? JSON.parse(cached) : [];
   }
 
   scrollToBottom() {
@@ -1491,10 +1449,6 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
         this.ionContent.scrollToBottom(300);
       }, 100);
     }
-  }
-
-  goToCallingScreen() {
-    this.router.navigate(['/calling-screen']);
   }
 
   onInputChange() {
@@ -1507,6 +1461,9 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
       this.scrollToBottom();
     }, 300);
   }
+  goToCallingScreen() {
+    this.router.navigate(['/calling-screen']);
+  }
 
   onInputBlur() {
     setTimeout(() => {
@@ -1514,7 +1471,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     }, 300);
   }
 
-  private async initKeyboardListeners() {
+  async initKeyboardListeners() {
     if (this.platform.is('capacitor')) {
       try {
         const showListener = await Keyboard.addListener('keyboardWillShow', (info) => {
@@ -1539,7 +1496,6 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     this.messageSub?.unsubscribe();
   }
 
-  // ... keyboard adjustment methods (same as your existing implementation)
   private handleKeyboardShow(keyboardHeight: number) {
     const footer = document.querySelector('.footer-fixed') as HTMLElement;
     const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
@@ -1563,8 +1519,8 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupFallbackKeyboardDetection() {
-    let initialViewportHeight = window.visualViewport?.height || window.innerHeight;
-    let initialChatPadding = 80;
+    const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    const initialChatPadding = 80;
 
     const handleViewportChange = () => {
       const currentHeight = window.visualViewport?.height || window.innerHeight;
