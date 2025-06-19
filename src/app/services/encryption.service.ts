@@ -38,14 +38,14 @@
 //     const privateKeyBase64 = this.STORAGE_PRIVATE_KEY;
 //     // const privateKeyBase64 = 14;
 // // 
-    
+
 //     if (!privateKeyBase64) {
 //       throw new Error('Private key not found in localStorage. Generate keys first.');
 //     }
-  
+
 //      this.privateKeyBuffer = this.base64ToArrayBuffer(privateKeyBase64);
 //   }
-  
+
 //     return window.crypto.subtle.importKey(
 //       'pkcs8',
 //       this.privateKeyBuffer,
@@ -56,7 +56,7 @@
 //       true,
 //       ['deriveKey', 'deriveBits']
 //     );
-    
+
 //   }
 
 //   /** Import receiver's public key (hex) */
@@ -238,31 +238,164 @@
 
 
 
+// import { Injectable } from '@angular/core';
+
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class EncryptionService {
+//   private secretKey = 'YourStrongKey123'; // Ideally from env
+//   private keyPair: CryptoKeyPair | null = null;
+
+//   // XOR-based simple encryption
+//   encrypt(text: string): string {
+//     return btoa(text.split('').map((c, i) =>
+//       String.fromCharCode(c.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
+//     ).join(''));
+//   }
+
+//   // XOR-based simple decryption
+//   decrypt(encryptedText: string): string {
+//     const decoded = atob(encryptedText);
+//     return decoded.split('').map((c, i) =>
+//       String.fromCharCode(c.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
+//     ).join('');
+//   }
+
+//   // ECC key generation
+//   async generateAndStoreECCKeys(): Promise<string> {
+//     this.keyPair = await crypto.subtle.generateKey(
+//       {
+//         name: 'ECDH',
+//         namedCurve: 'P-256',
+//       },
+//       true,
+//       ['deriveKey', 'deriveBits']
+//     );
+
+//     const exported = await crypto.subtle.exportKey('raw', this.keyPair.publicKey);
+//     const publicKeyHex = Array.from(new Uint8Array(exported))
+//       .map((b) => b.toString(16).padStart(2, '0'))
+//       .join('');
+
+//     localStorage.setItem('eccPublicKey', publicKeyHex);
+//     return publicKeyHex;
+//   }
+
+//   getPrivateKey(): CryptoKey | null {
+//     return this.keyPair?.privateKey || null;
+//   }
+
+//   getPublicKey(): CryptoKey | null {
+//     return this.keyPair?.publicKey || null;
+//   }
+// }
+
+
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EncryptionService {
-  private secretKey = 'YourStrongKey123'; // Ideally from env
+  private secretKey: string = 'YourSuperSecretPassphrase'; // Ideally from environment or login
+  private aesKey: CryptoKey | null = null;
   private keyPair: CryptoKeyPair | null = null;
 
-  // XOR-based simple encryption
-  encrypt(text: string): string {
-    return btoa(text.split('').map((c, i) =>
-      String.fromCharCode(c.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
-    ).join(''));
+  constructor() {
+    // Do NOT await here — handle key init lazily inside encrypt/decrypt
+    this.importAESKey(this.secretKey);
   }
 
-  // XOR-based simple decryption
-  decrypt(encryptedText: string): string {
-    const decoded = atob(encryptedText);
-    return decoded.split('').map((c, i) =>
-      String.fromCharCode(c.charCodeAt(0) ^ this.secretKey.charCodeAt(i % this.secretKey.length))
-    ).join('');
+  // Derive AES key from passphrase
+  async importAESKey(passphrase: string): Promise<void> {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(passphrase),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+    );
+
+    this.aesKey = await crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: enc.encode('your_salt_value'), // Use consistent salt per user/device
+        iterations: 100000,
+        hash: 'SHA-256'
+      },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
   }
 
-  // ECC key generation
+  // AES Encrypt
+  async encrypt(text: string): Promise<string> {
+    if (!this.aesKey) {
+      await this.importAESKey(this.secretKey);
+    }
+
+    const aesKey = this.aesKey!; // Now TypeScript knows it's not null
+
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(text);
+
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      aesKey,
+      encoded
+    );
+
+    const combined = new Uint8Array(iv.length + encrypted.byteLength);
+    combined.set(iv);
+    combined.set(new Uint8Array(encrypted), iv.length);
+
+    return btoa(String.fromCharCode(...combined));
+  }
+
+
+  // AES Decrypt
+  async decrypt(cipherText: string): Promise<string> {
+    if (!this.aesKey) {
+      await this.importAESKey(this.secretKey);
+    }
+
+    const aesKey = this.aesKey!;
+
+    if (!cipherText) return ''; // nothing to decrypt
+
+    try {
+      const data = Uint8Array.from(atob(cipherText), c => c.charCodeAt(0));
+
+      // Check minimum length for IV + ciphertext
+      if (data.length <= 12) {
+        // Probably plain text or corrupt — fallback
+        return cipherText;
+      }
+
+      const iv = data.slice(0, 12);
+      const encrypted = data.slice(12);
+
+      const decrypted = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        aesKey,
+        encrypted
+      );
+
+      return new TextDecoder().decode(decrypted);
+    } catch (err) {
+      // console.warn('Decrypt failed, falling back to plain text:', err);
+      return cipherText;
+    }
+  }
+
+
+
+  // ECC Key Generation
   async generateAndStoreECCKeys(): Promise<string> {
     this.keyPair = await crypto.subtle.generateKey(
       {
@@ -290,4 +423,5 @@ export class EncryptionService {
     return this.keyPair?.publicKey || null;
   }
 }
+
 

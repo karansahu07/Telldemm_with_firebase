@@ -1360,6 +1360,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   isLoadingMore = false;
   hasMoreMessages = true;
   router: any;
+  chatType: 'private' | 'group' = 'private'; // default to private
 
   async ngOnInit() {
     Keyboard.setScroll({ isDisabled: false });
@@ -1367,13 +1368,19 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
 
     this.senderId = localStorage.getItem('userId') || '';
     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
-    this.receiverId = decodeURIComponent(rawId);
+    const chatTypeParam = this.route.snapshot.queryParamMap.get('isGroup');
 
-    this.roomId = this.getRoomId(this.senderId, this.receiverId);
+    this.chatType = chatTypeParam === 'true' ? 'group' : 'private';
+
+    if (this.chatType === 'group') {
+      this.roomId = decodeURIComponent(rawId); // group id is the roomId
+    } else {
+      this.receiverId = decodeURIComponent(rawId);
+      this.roomId = this.getRoomId(this.senderId, this.receiverId);
+    }
 
     this.loadFromLocalStorage();
     this.listenForMessages();
-
     setTimeout(() => this.scrollToBottom(), 100);
   }
 
@@ -1392,55 +1399,66 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     return userA < userB ? `${userA}_${userB}` : `${userB}_${userA}`;
   }
 
-  listenForMessages() {
-    this.messageSub = this.chatService.listenForMessages(this.roomId).subscribe((data) => {
-  this.messages = data.map(msg => {
-    return {
-      ...msg,
-      text: this.encryptionService.decrypt(msg.text)
-    };
-  });
-
-  this.saveToLocalStorage();
-  setTimeout(() => this.scrollToBottom(), 100);
-});
+  async listenForMessages() {
+    this.messageSub = this.chatService.listenForMessages(this.roomId).subscribe(async (data) => {
+      const decryptedMessages = [];
+      for (const msg of data) {
+        const decryptedText = await this.encryptionService.decrypt(msg.text);
+        decryptedMessages.push({ ...msg, text: decryptedText });
+      }
+      this.messages = decryptedMessages;
+      this.saveToLocalStorage();
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
   }
 
   loadMessagesFromFirebase(isPagination = false) {
     // Optional: Pagination logic using Firebase `limitToLast`, `endAt`, etc.
   }
 
- sendMessage() {
-  if (!this.messageText.trim()) return;
+  async sendMessage() {
+    if (!this.messageText.trim()) return;
 
-  const date = new Date();
-  const encryptedText = this.encryptionService.encrypt(this.messageText.trim());
+    const date = new Date();
+    const plainText = this.messageText.trim();
+    const encryptedText = await this.encryptionService.encrypt(plainText);
 
-  const message = {
-    sender_id: this.senderId,
-    receiver_id: this.receiverId,
-    text: encryptedText, // encrypted text saved in DB
-    timestamp: `${date.toLocaleDateString('en-IN')}, ${date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    })}`
-  };
+    const message: any = {
+      sender_id: this.senderId,
+      text: encryptedText,
+      timestamp: `${date.toLocaleDateString('en-IN')}, ${date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      })}`
+    };
 
-  this.chatService.sendMessage(this.roomId, message); 
+    if (this.chatType === 'private') {
+      message.receiver_id = this.receiverId;
+    }
 
-  this.messageText = '';
-  this.showSendButton = false;
-  this.scrollToBottom();
-}
+    this.chatService.sendMessage(this.roomId, message);
+
+    this.messageText = '';
+    this.showSendButton = false;
+    this.scrollToBottom();
+  }
 
   saveToLocalStorage() {
     localStorage.setItem(this.roomId, JSON.stringify(this.messages));
   }
 
-  loadFromLocalStorage() {
+  async loadFromLocalStorage() {
     const cached = localStorage.getItem(this.roomId);
-    this.messages = cached ? JSON.parse(cached) : [];
+    const rawMessages = cached ? JSON.parse(cached) : [];
+    const decryptedMessages = [];
+
+    for (const msg of rawMessages) {
+      const decryptedText = await this.encryptionService.decrypt(msg.text);
+      decryptedMessages.push({ ...msg, text: decryptedText });
+    }
+
+    this.messages = decryptedMessages;
   }
 
   scrollToBottom() {
@@ -1461,6 +1479,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
       this.scrollToBottom();
     }, 300);
   }
+
   goToCallingScreen() {
     this.router.navigate(['/calling-screen']);
   }
