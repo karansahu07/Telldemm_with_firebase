@@ -507,7 +507,8 @@
           <img src="assets/images/user.jfif" alt="User Avatar" onError="this.src='assets/images/default-avatar.png'" />
         </ion-avatar>
         <ion-label style="width: auto; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <h2 style="margin: 0; font-size: 16px;">{{ receiverId }}</h2>
+          <!-- <h2 style="margin: 0; font-size: 16px;">{{ receiverId }}</h2> -->
+            <h2 style="margin: 0; font-size: 16px;">{{ chatType === 'group' ? groupName : receiverId }}</h2>
         </ion-label>
       </ion-item>
     </ion-buttons>

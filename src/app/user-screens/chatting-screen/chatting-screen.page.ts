@@ -1361,6 +1361,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   hasMoreMessages = true;
   router: any;
   chatType: 'private' | 'group' = 'private'; // default to private
+  groupName = '';// add this today
 
   async ngOnInit() {
     Keyboard.setScroll({ isDisabled: false });
