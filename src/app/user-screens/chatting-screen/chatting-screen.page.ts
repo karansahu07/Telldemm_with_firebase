@@ -1603,6 +1603,7 @@ import { Subscription } from 'rxjs';
 import { Keyboard } from '@capacitor/keyboard';
 import { FirebaseChatService } from 'src/app/services/firebase-chat.service';
 import { EncryptionService } from 'src/app/services/encryption.service';
+import { getDatabase, ref, get } from 'firebase/database';
 
 @Component({
   selector: 'app-chatting-screen',
@@ -1640,26 +1641,46 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   groupName = '';
 
   async ngOnInit() {
-    Keyboard.setScroll({ isDisabled: false });
-    await this.initKeyboardListeners();
+  Keyboard.setScroll({ isDisabled: false });
+  await this.initKeyboardListeners();
 
-    this.senderId = localStorage.getItem('userId') || '';
-    const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
-    const chatTypeParam = this.route.snapshot.queryParamMap.get('isGroup');
+  this.senderId = localStorage.getItem('userId') || '';
+  const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+  const chatTypeParam = this.route.snapshot.queryParamMap.get('isGroup');
 
-    this.chatType = chatTypeParam === 'true' ? 'group' : 'private';
+  this.chatType = chatTypeParam === 'true' ? 'group' : 'private';
 
-    if (this.chatType === 'group') {
-      this.roomId = decodeURIComponent(rawId);
-    } else {
-      this.receiverId = decodeURIComponent(rawId);
-      this.roomId = this.getRoomId(this.senderId, this.receiverId);
-    }
-
-    this.loadFromLocalStorage();
-    this.listenForMessages();
-    setTimeout(() => this.scrollToBottom(), 100);
+  if (this.chatType === 'group') {
+    this.roomId = decodeURIComponent(rawId);
+    await this.fetchGroupName(this.roomId);
+  } else {
+    this.receiverId = decodeURIComponent(rawId);
+    this.roomId = this.getRoomId(this.senderId, this.receiverId);
   }
+
+  this.loadFromLocalStorage();
+  this.listenForMessages();
+  setTimeout(() => this.scrollToBottom(), 100);
+}
+
+async fetchGroupName(groupId: string) {
+  try {
+    const db = getDatabase();
+    const groupRef = ref(db, `groups/${groupId}`);
+    const snapshot = await get(groupRef);
+
+    if (snapshot.exists()) {
+      const groupData = snapshot.val();
+      this.groupName = groupData.name || 'Group';
+    } else {
+      this.groupName = 'Group';
+    }
+  } catch (error) {
+    console.error('Error fetching group name:', error);
+    this.groupName = 'Group';
+  }
+}
+
 
   ngAfterViewInit() {
     if (this.ionContent) {
