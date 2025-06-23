@@ -1032,20 +1032,20 @@ export class HomeScreenPage implements OnInit, OnDestroy {
     document.body.classList.remove('scanner-active');
   }
 
-  async createGroup() {
-    const selectedUsers = this.chatList.filter(user => user.selected && !user.group);
-    const memberIds = selectedUsers.map(u => u.receiver_Id);
-    const currentUser = localStorage.getItem('phone_number');
-    if (currentUser) memberIds.push(currentUser);
+  // async createGroup() {
+  //   const selectedUsers = this.chatList.filter(user => user.selected && !user.group);
+  //   const memberIds = selectedUsers.map(u => u.receiver_Id);
+  //   const currentUser = localStorage.getItem('phone_number');
+  //   if (currentUser) memberIds.push(currentUser);
 
-    const groupId = `group_${Date.now()}`;
-    if (!this.newGroupName.trim()) return alert('Group name is required');
+  //   const groupId = `group_${Date.now()}`;
+  //   if (!this.newGroupName.trim()) return alert('Group name is required');
 
-    await this.firebaseChatService.createGroup(groupId, this.newGroupName, memberIds);
-    this.toggleGroupCreator = false;
-    this.newGroupName = '';
-    this.loadUserGroups();
-  }
+  //   await this.firebaseChatService.createGroup(groupId, this.newGroupName, memberIds);
+  //   this.toggleGroupCreator = false;
+  //   this.newGroupName = '';
+  //   this.loadUserGroups();
+  // }
 }
 
  

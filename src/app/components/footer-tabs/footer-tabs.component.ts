@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 // import { IonTabBar } from '@ionic/angular/standalone';
-import { IonTabBar, IonBadge } from '@ionic/angular/standalone';  // ✅ Import IonBadge
+import { IonTabBar, IonBadge } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-footer-tabs',
@@ -15,7 +15,7 @@ export class FooterTabsComponent {
 
   @Input() totalUnreadCount: number = 0;  
 
-  activePath: string = '/home-screen';  // Default active path
+  activePath: string = '/home-screen';
 
   constructor(private router: Router) {
     // Update activePath when route changes
@@ -34,9 +34,9 @@ export class FooterTabsComponent {
     this.activePath = '/status-screen';
   }
 
-  navigateTomyscreen() {
-    this.router.navigate(['/setting-screen']);
-    this.activePath = '/setting-screen';
+  navigateTocommunityscreen() {
+    this.router.navigate(['/community-screen']);
+    this.activePath = '/community-screen';
   }
 
   navigateTocallsscreen() {
@@ -47,6 +47,9 @@ export class FooterTabsComponent {
   isActive(paths: string[]): boolean {
     return paths.includes(this.router.url);
   }
+//   isActive(paths: string[]): boolean {
+//   return paths.some(path => this.router.url.startsWith(path));
+// }
 }
 
 

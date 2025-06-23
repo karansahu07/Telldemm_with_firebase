@@ -1312,6 +1312,280 @@
 // }
 
 
+// import {
+//   Component,
+//   OnInit,
+//   OnDestroy,
+//   inject,
+//   ViewChild,
+//   ElementRef,
+//   AfterViewInit
+// } from '@angular/core';
+// import { ActivatedRoute } from '@angular/router';
+// import { CommonModule } from '@angular/common';
+// import { FormsModule } from '@angular/forms';
+// import { IonContent, IonicModule, Platform } from '@ionic/angular';
+// import { Subscription } from 'rxjs';
+// import { Keyboard } from '@capacitor/keyboard';
+// import { FirebaseChatService } from 'src/app/services/firebase-chat.service';
+// import { EncryptionService } from 'src/app/services/encryption.service';
+
+// @Component({
+//   selector: 'app-chatting-screen',
+//   standalone: true,
+//   imports: [CommonModule, FormsModule, IonicModule],
+//   templateUrl: './chatting-screen.page.html',
+//   styleUrls: ['./chatting-screen.page.scss']
+// })
+// export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
+//   @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+//   @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
+
+//   messages: any[] = [];
+//   messageText = '';
+//   receiverId = '';
+//   senderId = '';
+//   private messageSub?: Subscription;
+//   showSendButton = false;
+//   private keyboardListeners: any[] = [];
+
+//   private chatService = inject(FirebaseChatService);
+//   private route = inject(ActivatedRoute);
+//   private platform = inject(Platform);
+//   private encryptionService = inject(EncryptionService);
+
+//   roomId = '';
+//   limit = 10;
+//   page = 0;
+//   isLoadingMore = false;
+//   hasMoreMessages = true;
+//   router: any;
+//   chatType: 'private' | 'group' = 'private'; // default to private
+//   groupName = '';// add this today
+
+//   async ngOnInit() {
+//     Keyboard.setScroll({ isDisabled: false });
+//     await this.initKeyboardListeners();
+
+//     this.senderId = localStorage.getItem('userId') || '';
+//     const rawId = this.route.snapshot.queryParamMap.get('receiverId') || '';
+//     const chatTypeParam = this.route.snapshot.queryParamMap.get('isGroup');
+
+//     this.chatType = chatTypeParam === 'true' ? 'group' : 'private';
+
+//     if (this.chatType === 'group') {
+//       this.roomId = decodeURIComponent(rawId); // group id is the roomId
+//     } else {
+//       this.receiverId = decodeURIComponent(rawId);
+//       this.roomId = this.getRoomId(this.senderId, this.receiverId);
+//     }
+
+//     this.loadFromLocalStorage();
+//     this.listenForMessages();
+//     setTimeout(() => this.scrollToBottom(), 100);
+//   }
+
+//   ngAfterViewInit() {
+//     if (this.ionContent) {
+//       this.ionContent.ionScroll.subscribe(async (event: any) => {
+//         if (event.detail.scrollTop < 50 && this.hasMoreMessages && !this.isLoadingMore) {
+//           this.page += 1;
+//           this.loadMessagesFromFirebase(true);
+//         }
+//       });
+//     }
+//   }
+
+//   getRoomId(userA: string, userB: string): string {
+//     return userA < userB ? `${userA}_${userB}` : `${userB}_${userA}`;
+//   }
+
+//   async listenForMessages() {
+//     this.messageSub = this.chatService.listenForMessages(this.roomId).subscribe(async (data) => {
+//       const decryptedMessages = [];
+//       for (const msg of data) {
+//         const decryptedText = await this.encryptionService.decrypt(msg.text);
+//         decryptedMessages.push({ ...msg, text: decryptedText });
+//       }
+//       this.messages = decryptedMessages;
+//       this.saveToLocalStorage();
+//       setTimeout(() => this.scrollToBottom(), 100);
+//     });
+//   }
+
+//   loadMessagesFromFirebase(isPagination = false) {
+//     // Optional: Pagination logic using Firebase `limitToLast`, `endAt`, etc.
+//   }
+
+//   async sendMessage() {
+//     if (!this.messageText.trim()) return;
+
+//     const date = new Date();
+//     const plainText = this.messageText.trim();
+//     const encryptedText = await this.encryptionService.encrypt(plainText);
+
+//     const message: any = {
+//       sender_id: this.senderId,
+//       text: encryptedText,
+//       timestamp: `${date.toLocaleDateString('en-IN')}, ${date.toLocaleTimeString([], {
+//         hour: '2-digit',
+//         minute: '2-digit',
+//         hour12: true
+//       })}`
+//     };
+
+//     if (this.chatType === 'private') {
+//       message.receiver_id = this.receiverId;
+//     }
+
+//     this.chatService.sendMessage(this.roomId, message);
+
+//     this.messageText = '';
+//     this.showSendButton = false;
+//     this.scrollToBottom();
+//   }
+
+//   saveToLocalStorage() {
+//     localStorage.setItem(this.roomId, JSON.stringify(this.messages));
+//   }
+
+//   async loadFromLocalStorage() {
+//     const cached = localStorage.getItem(this.roomId);
+//     const rawMessages = cached ? JSON.parse(cached) : [];
+//     const decryptedMessages = [];
+
+//     for (const msg of rawMessages) {
+//       const decryptedText = await this.encryptionService.decrypt(msg.text);
+//       decryptedMessages.push({ ...msg, text: decryptedText });
+//     }
+
+//     this.messages = decryptedMessages;
+//   }
+
+//   scrollToBottom() {
+//     if (this.ionContent) {
+//       setTimeout(() => {
+//         this.ionContent.scrollToBottom(300);
+//       }, 100);
+//     }
+//   }
+
+//   onInputChange() {
+//     this.showSendButton = this.messageText?.trim().length > 0;
+//   }
+
+//   onInputFocus() {
+//     setTimeout(() => {
+//       this.adjustFooterPosition();
+//       this.scrollToBottom();
+//     }, 300);
+//   }
+
+//   goToCallingScreen() {
+//     this.router.navigate(['/calling-screen']);
+//   }
+
+//   onInputBlur() {
+//     setTimeout(() => {
+//       this.resetFooterPosition();
+//     }, 300);
+//   }
+
+//   async initKeyboardListeners() {
+//     if (this.platform.is('capacitor')) {
+//       try {
+//         const showListener = await Keyboard.addListener('keyboardWillShow', (info) => {
+//           this.handleKeyboardShow(info.keyboardHeight);
+//         });
+
+//         const hideListener = await Keyboard.addListener('keyboardWillHide', () => {
+//           this.handleKeyboardHide();
+//         });
+
+//         this.keyboardListeners.push(showListener, hideListener);
+//       } catch (error) {
+//         this.setupFallbackKeyboardDetection();
+//       }
+//     } else {
+//       this.setupFallbackKeyboardDetection();
+//     }
+//   }
+
+//   ngOnDestroy() {
+//     this.keyboardListeners.forEach(listener => listener?.remove());
+//     this.messageSub?.unsubscribe();
+//   }
+
+//   private handleKeyboardShow(keyboardHeight: number) {
+//     const footer = document.querySelector('.footer-fixed') as HTMLElement;
+//     const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+//     const ionContent = document.querySelector('ion-content') as HTMLElement;
+
+//     if (footer) footer.style.bottom = `${keyboardHeight}px`;
+//     if (chatMessages) chatMessages.style.paddingBottom = `${keyboardHeight + 80}px`;
+//     if (ionContent) ionContent.style.paddingBottom = `${keyboardHeight}px`;
+
+//     setTimeout(() => this.scrollToBottom(), 350);
+//   }
+
+//   private handleKeyboardHide() {
+//     const footer = document.querySelector('.footer-fixed') as HTMLElement;
+//     const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+//     const ionContent = document.querySelector('ion-content') as HTMLElement;
+
+//     if (footer) footer.style.bottom = '0px';
+//     if (chatMessages) chatMessages.style.paddingBottom = '80px';
+//     if (ionContent) ionContent.style.paddingBottom = '0px';
+//   }
+
+//   private setupFallbackKeyboardDetection() {
+//     const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+//     const initialChatPadding = 80;
+
+//     const handleViewportChange = () => {
+//       const currentHeight = window.visualViewport?.height || window.innerHeight;
+//       const heightDifference = initialViewportHeight - currentHeight;
+
+//       const footer = document.querySelector('.footer-fixed') as HTMLElement;
+//       const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+//       const ionContent = document.querySelector('ion-content') as HTMLElement;
+
+//       if (heightDifference > 150) {
+//         if (footer) footer.style.bottom = `${heightDifference}px`;
+//         if (chatMessages) chatMessages.style.paddingBottom = `${heightDifference + initialChatPadding}px`;
+//         if (ionContent) ionContent.style.paddingBottom = `${heightDifference}px`;
+//         setTimeout(() => this.scrollToBottom(), 350);
+//       } else {
+//         if (footer) footer.style.bottom = '0px';
+//         if (chatMessages) chatMessages.style.paddingBottom = `${initialChatPadding}px`;
+//         if (ionContent) ionContent.style.paddingBottom = '0px';
+//       }
+//     };
+
+//     if (window.visualViewport) {
+//       window.visualViewport.addEventListener('resize', handleViewportChange);
+//     } else {
+//       window.addEventListener('resize', handleViewportChange);
+//     }
+//   }
+
+//   private adjustFooterPosition() {
+//     const footer = document.querySelector('.footer-fixed') as HTMLElement;
+//     const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+//     if (footer) footer.classList.add('keyboard-active');
+//     if (chatMessages) chatMessages.classList.add('keyboard-active');
+//   }
+
+//   private resetFooterPosition() {
+//     const footer = document.querySelector('.footer-fixed') as HTMLElement;
+//     const chatMessages = document.querySelector('.chat-messages') as HTMLElement;
+//     if (footer) footer.classList.remove('keyboard-active');
+//     if (chatMessages) chatMessages.classList.remove('keyboard-active');
+//   }
+// }
+
+
+
 import {
   Component,
   OnInit,
@@ -1342,6 +1616,8 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(IonContent, { static: false }) ionContent!: IonContent;
 
   messages: any[] = [];
+  groupedMessages: { date: string; messages: any[] }[] = [];
+
   messageText = '';
   receiverId = '';
   senderId = '';
@@ -1360,8 +1636,8 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
   isLoadingMore = false;
   hasMoreMessages = true;
   router: any;
-  chatType: 'private' | 'group' = 'private'; // default to private
-  groupName = '';// add this today
+  chatType: 'private' | 'group' = 'private';
+  groupName = '';
 
   async ngOnInit() {
     Keyboard.setScroll({ isDisabled: false });
@@ -1374,7 +1650,7 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     this.chatType = chatTypeParam === 'true' ? 'group' : 'private';
 
     if (this.chatType === 'group') {
-      this.roomId = decodeURIComponent(rawId); // group id is the roomId
+      this.roomId = decodeURIComponent(rawId);
     } else {
       this.receiverId = decodeURIComponent(rawId);
       this.roomId = this.getRoomId(this.senderId, this.receiverId);
@@ -1408,13 +1684,62 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
         decryptedMessages.push({ ...msg, text: decryptedText });
       }
       this.messages = decryptedMessages;
+      this.groupedMessages = this.groupMessagesByDate(decryptedMessages);
       this.saveToLocalStorage();
       setTimeout(() => this.scrollToBottom(), 100);
     });
   }
 
-  loadMessagesFromFirebase(isPagination = false) {
-    // Optional: Pagination logic using Firebase `limitToLast`, `endAt`, etc.
+  groupMessagesByDate(messages: any[]) {
+    const grouped: { [date: string]: any[] } = {};
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    messages.forEach(msg => {
+      const datePart = msg.timestamp?.split(', ')[0];
+      const [dd, mm, yyyy] = datePart.split('/').map(Number);
+      const msgDate = new Date(yyyy, mm - 1, dd);
+
+      let label = datePart;
+      if (
+        msgDate.getDate() === today.getDate() &&
+        msgDate.getMonth() === today.getMonth() &&
+        msgDate.getFullYear() === today.getFullYear()
+      ) {
+        label = 'Today';
+      } else if (
+        msgDate.getDate() === yesterday.getDate() &&
+        msgDate.getMonth() === yesterday.getMonth() &&
+        msgDate.getFullYear() === yesterday.getFullYear()
+      ) {
+        label = 'Yesterday';
+      }
+
+      if (!grouped[label]) {
+        grouped[label] = [];
+      }
+      grouped[label].push(msg);
+    });
+
+    return Object.keys(grouped).map(date => ({
+      date,
+      messages: grouped[date]
+    }));
+  }
+
+  async loadFromLocalStorage() {
+    const cached = localStorage.getItem(this.roomId);
+    const rawMessages = cached ? JSON.parse(cached) : [];
+    const decryptedMessages = [];
+
+    for (const msg of rawMessages) {
+      const decryptedText = await this.encryptionService.decrypt(msg.text);
+      decryptedMessages.push({ ...msg, text: decryptedText });
+    }
+
+    this.messages = decryptedMessages;
+    this.groupedMessages = this.groupMessagesByDate(decryptedMessages);
   }
 
   async sendMessage() {
@@ -1445,21 +1770,10 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToBottom();
   }
 
+  loadMessagesFromFirebase(isPagination = false) {}
+
   saveToLocalStorage() {
     localStorage.setItem(this.roomId, JSON.stringify(this.messages));
-  }
-
-  async loadFromLocalStorage() {
-    const cached = localStorage.getItem(this.roomId);
-    const rawMessages = cached ? JSON.parse(cached) : [];
-    const decryptedMessages = [];
-
-    for (const msg of rawMessages) {
-      const decryptedText = await this.encryptionService.decrypt(msg.text);
-      decryptedMessages.push({ ...msg, text: decryptedText });
-    }
-
-    this.messages = decryptedMessages;
   }
 
   scrollToBottom() {
@@ -1481,14 +1795,14 @@ export class ChattingScreenPage implements OnInit, AfterViewInit, OnDestroy {
     }, 300);
   }
 
-  goToCallingScreen() {
-    this.router.navigate(['/calling-screen']);
-  }
-
   onInputBlur() {
     setTimeout(() => {
       this.resetFooterPosition();
     }, 300);
+  }
+
+  goToCallingScreen() {
+    this.router.navigate(['/calling-screen']);
   }
 
   async initKeyboardListeners() {
