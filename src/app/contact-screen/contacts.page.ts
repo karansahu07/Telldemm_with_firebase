@@ -362,7 +362,7 @@ export class ContactsPage implements OnInit {
 
   showSearchBar = false;
   searchTerm: string = '';
-  keyboardType: 'text' | 'tel' = 'text'; // ✅ merged from old file
+  keyboardType: 'text' | 'tel' = 'text';
 
   creatingGroup = false;
   newGroupName: string = '';
@@ -371,7 +371,7 @@ export class ContactsPage implements OnInit {
     private router: Router,
     private popoverControl: PopoverController,
     private actionSheetCtrl: ActionSheetController,
-    private apiService: ApiService,
+    private service: ApiService,
     private firebaseChatService: FirebaseChatService
   ) {}
 
@@ -383,10 +383,10 @@ export class ContactsPage implements OnInit {
     const currentUserPhone = localStorage.getItem('phone_number');
     this.allUsers = [];
 
-    this.apiService.getAllUsers().subscribe((users: any[]) => {
+    this.service.getAllUsers().subscribe((users: any[]) => {
       users.forEach(user => {
         if (user.phone_number !== currentUserPhone) {
-          this.apiService.getUserProfilebyId(user.user_id.toString()).subscribe((profile: any) => {
+          this.service.getUserProfilebyId(user.user_id.toString()).subscribe((profile: any) => {
             const receiverId = profile.phone_number;
             const contact = {
               ...user,
@@ -428,7 +428,7 @@ export class ContactsPage implements OnInit {
     alert('Group created successfully');
   }
 
-  // ✅ from old file
+  
   focusSearchBar() {
     this.showSearchBar = true;
     setTimeout(() => {
@@ -440,7 +440,7 @@ export class ContactsPage implements OnInit {
     }, 300);
   }
 
-  // ✅ from old file
+  
   toggleSearch() {
     this.showSearchBar = !this.showSearchBar;
     if (!this.showSearchBar) {
@@ -450,7 +450,7 @@ export class ContactsPage implements OnInit {
     }
   }
 
-  // ✅ from old file
+  
   toggleKeyboardType() {
     this.keyboardType = this.keyboardType === 'text' ? 'tel' : 'text';
     setTimeout(() => {
