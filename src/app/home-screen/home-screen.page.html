@@ -128,9 +128,7 @@
       </div>
     </div>
  
-    <!-- <ion-button expand="block" (click)="toggleGroupCreator = !toggleGroupCreator">
-      {{ toggleGroupCreator ? 'Cancel Group Creation' : 'Create Group' }}
-    </ion-button> -->
+    
  
     <div *ngIf="toggleGroupCreator" class="group-creator">
       <ion-input [(ngModel)]="newGroupName" placeholder="Enter Group Name"></ion-input>
@@ -142,7 +140,7 @@
           </ion-item>
         </ng-container>
       </ion-list>
-      <!-- <ion-button expand="full" color="primary" (click)="createGroup()">Create Group</ion-button> -->
+      
     </div>
   </ion-toolbar>
 </ion-header>

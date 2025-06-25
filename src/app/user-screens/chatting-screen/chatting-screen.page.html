@@ -604,7 +604,7 @@
 </ion-header>
 
 <ion-content class="chat-background" [fullscreen]="true" [scrollEvents]="true">
-  <div #scrollContainer class="chat-messages" style="padding: 0 10px 80px 10px; overflow-y: auto; min-height: 100%;">
+  <div #scrollContainer class="chat-messages" style="padding: 0 10px 80px 10px ; overflow-y: auto; min-height: 100%;">
     <ion-spinner name="dots" *ngIf="isLoadingMore" style="margin: 8px auto; display: block;"></ion-spinner>
 
     <div *ngFor="let group of groupedMessages">

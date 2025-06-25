@@ -80,3 +80,8 @@
         url('./assets/fonts/OpenSans-SemiBold.ttf') format('ttf'),
         url('./assets/fonts/OpenSans-SemiBold.otf') format('otf');
 }
+
+
+ion-toolbar {
+  padding-top: env(safe-area-inset-top);
+}
